@@ -1,67 +1,35 @@
 import React from "react";
+import { Button, Carousel, Card , Navbar , Nav , Container, NavDropdown} from "react-bootstrap";
+import { Outlet, Link } from "react-router-dom";
 import './Navbar.css';
-
-const Navbar = () => {
+const Header = () => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a className="navbar-brand" href="#">
-        Cryptogrammer
-      </a>
-      <button
-        className="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarNavDropdown"
-        aria-controls="navbarNavDropdown"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
-
-      <div className="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul className="navbar-nav">
-          <li className="nav-item active">
-            <a className="nav-link" href="#">
-              Articles
-            </a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#">
-              Algorithms
-            </a>
-          </li>
-          /*
-          <li className="nav-item dropdown">
-            <a
-              className="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdownMenuLink"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              Dropdown link
-            </a>
-            <div
-              className="dropdown-menu"
-              aria-labelledby="navbarDropdownMenuLink"
-            >
-              <a className="dropdown-item" href="#">
-                Action
-              </a>
-              <a className="dropdown-item" href="#">
-                Another action
-              </a>
-              <a className="dropdown-item" href="#">
-                Something else here
-              </a>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </nav>
+      <>
+      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+    <Container>
+    <Navbar.Brand href="./">Cryptogrammer
+      {/* <img
+          alt=""
+          src="./logo-color.svg"
+          width="30"
+          height="30"
+          className="d-inline-block align-top"
+        />{' '} */}
+      </Navbar.Brand>
+    <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+    <Navbar.Collapse id="responsive-navbar-nav">
+      <Nav className="me-auto">
+        <Nav.Link className="header-link" as={Link} to="articles">Articles</Nav.Link>
+        <Nav.Link className="header-link" as={Link} to="algorithms">Algorithms</Nav.Link>
+      </Nav>
+      {/* <Nav className="justify-content-end">
+        <LeftTab user={user}/>
+      </Nav> */}
+    </Navbar.Collapse>
+    </Container>
+  </Navbar>
+  <Outlet />
+  </>
   );
 };
-
-export default Navbar;
+export default Header;
