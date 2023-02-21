@@ -8,6 +8,7 @@ import { Articles } from './Articles';
 import { Algorithms } from './Algorithms';
 import { Caeser } from './Algos/Caeser';
 import { Vignere } from './Algos/Vignere';
+import { Playfair } from './Algos/Playfair';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="algorithms" element={<Algorithms />} />
           <Route path="algorithms/caeser"element={<Caeser/>} />
           <Route path="algorithms/vignere"element={<Vignere/>} />
+          <Route path="algorithms/playfair"element={<Playfair/>} />
           </Route>
       </Routes>
     </BrowserRouter>
