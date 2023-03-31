@@ -1,12 +1,61 @@
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Playfair = () => {
     const [message, setMessage] = useState("");
     const [key, setKey] = useState("");
     const [playSq, setPlaySq] = useState([]);
     const [cipher, setCipher] = useState("");
+
+    useEffect(() => {
+      encode()
+    }, [message, key])
+
+    const encode = () => {
+        buildPlayfairSquare();
+        formatMessage();
+        console.log(message);
+        console.log(playSq);
+        var msg = message.toUpperCase();
+        let indexA = new Array(2);
+        let indexB = new Array(2);
+        let res='';
+        for(let i = 0; i < message.length-1; i+=2){
+            let a = msg.charAt(i);
+            let b = msg.charAt(i+1);
+            //search
+            if(a === 'J') a = 'I'
+            if(b === 'J') b = 'I'
+            for(let i = 0; i < 5; i++){
+                for(let j = 0; j < 5; j++){
+                    if(playSq[i][j] === a){
+                        indexA[0] = i;
+                        indexA[1] = j;
+                    }
+                    if(playSq[i][j] === b){
+                        indexB[0] = i;
+                        indexB[1] = j;
+                    }
+                }
+            }
+            //search ends
+            if(indexA[0] === indexB[0]){
+                res += playSq[indexA[0]][(indexA[1]+1)%5];
+                res += playSq[indexB[0]][(indexB[1]+1)%5];
+            }
+            else if(indexA[1] === indexB[1]){
+                res += playSq[(indexA[0]+1)%5][indexA[1]];
+                res += playSq[(indexB[0]+1)%5][indexB[1]];
+            }
+            else{
+                res += playSq[indexA[0]][indexB[1]];
+                res += playSq[indexB[0]][indexA[1]];
+            }
+        }
+        setCipher(res);
+    }
+    
 
     const formatMessage = () => {
         var text = message.toUpperCase()
@@ -66,52 +115,6 @@ export const Playfair = () => {
         }
         setPlaySq(square);
     }
-    
-    const buildCipher = (e) => {
-        e.preventDefault();
-        console.log(message);
-        buildPlayfairSquare();
-        formatMessage();
-        console.log(message);
-        console.log(playSq);
-        var msg = message.toUpperCase();
-        let indexA = new Array(2);
-        let indexB = new Array(2);
-        let res='';
-        for(let i = 0; i < message.length-1; i+=2){
-            let a = msg.charAt(i);
-            let b = msg.charAt(i+1);
-            //search
-            if(a === 'J') a = 'I'
-            if(b === 'J') b = 'I'
-            for(let i = 0; i < 5; i++){
-                for(let j = 0; j < 5; j++){
-                    if(playSq[i][j] === a){
-                        indexA[0] = i;
-                        indexA[1] = j;
-                    }
-                    if(playSq[i][j] === b){
-                        indexB[0] = i;
-                        indexB[1] = j;
-                    }
-                }
-            }
-            //search ends
-            if(indexA[0] === indexB[0]){
-                res += playSq[indexA[0]][(indexA[1]+1)%5];
-                res += playSq[indexB[0]][(indexB[1]+1)%5];
-            }
-            else if(indexA[1] === indexB[1]){
-                res += playSq[(indexA[0]+1)%5][indexA[1]];
-                res += playSq[(indexB[0]+1)%5][indexB[1]];
-            }
-            else{
-                res += playSq[indexA[0]][indexB[1]];
-                res += playSq[indexB[0]][indexA[1]];
-            }
-        }
-        setCipher(res);
-    }
     return (<Form>
         <Form.Group className='mb-3' controlId='message'>
             <Form.Label>Plain Text</Form.Label>
@@ -121,7 +124,6 @@ export const Playfair = () => {
             <Form.Label>Key</Form.Label>
             <Form.Control style={{textTransform: 'uppercase'}} type='text' onChange={(e)=>setKey(e.target.value)} placeholder='Enter the key' />
         </Form.Group>
-        <Button variant='primary' type='submit' onClick={(e)=>buildCipher(e)}>Submit</Button>
         <Form.Group className='mb-3' controlId='cipher'>
             <Form.Label>Cipher Text</Form.Label>
             <Form.Control type='text' value={cipher} placeholder='Cipher Text' readOnly />
