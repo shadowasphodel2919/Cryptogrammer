@@ -6,6 +6,7 @@ export const Algorithms = () => {
             <Link as={Link} to="caeser">Caeser Cipher</Link>
             <Link as={Link} to="vignere">Vignere Cipher</Link>
             <Link as={Link} to="playfair">Playfair Cipher</Link>
+            <Link as={Link} to="atbash">Atbash Cipher</Link>
         </section>
     </div>);
 }

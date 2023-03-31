@@ -1,3 +1,4 @@
 export const Articles = () => {
-    return (<div>Hey</div>);
+    
+    return (<div className="blogs"></div>);
 }

@@ -9,6 +9,7 @@ import { Algorithms } from './Algorithms';
 import { Caeser } from './Algos/Caeser';
 import { Vignere } from './Algos/Vignere';
 import { Playfair } from './Algos/Playfair';
+import Atbash from './Algos/Atbash';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="algorithms/caeser"element={<Caeser/>} />
           <Route path="algorithms/vignere"element={<Vignere/>} />
           <Route path="algorithms/playfair"element={<Playfair/>} />
+          <Route path="algorithms/atbash" element={<Atbash />} />
           </Route>
       </Routes>
     </BrowserRouter>
