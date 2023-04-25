@@ -97,3 +97,13 @@
 p{
   margin: 0px !important;
 }
+
+table, tbody tr, tbody td{
+  border: 1px black solid;
+}
+
+tbody td{
+  height: 3rem;
+  width: 3rem;
+  padding: 1rem;
+}
