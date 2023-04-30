@@ -64,7 +64,7 @@ export const Railfence = () => {
         <Button variant='primary' type='submit' onClick={(e)=>buildCipher(e)}>Submit</Button>
         <Form.Group className='mb-3' controlId='cipher'>
             <Form.Label>Cipher Text</Form.Label>
-            <Form.Control type='text' value={cipher} placeholder='Enter the key' readOnly />
+            <Form.Control type='text' value={cipher} placeholder='Encrypted Text' readOnly />
         </Form.Group>
     </Form>
     <Table data={table}/>
