@@ -38,7 +38,7 @@ export const Vignere = () => {
         </Form.Group>
         <Form.Group className='mb-3' controlId='key'>
             <Form.Label>Key</Form.Label>
-            <Form.Control style={{textTransform: 'uppercase'}} type='text' onChange={(e)=>setKey(e.target.value)} placeholder='Enter the key' />
+            <Form.Control style={{textTransform: 'uppercase'}} type='text' onChange={(e)=>setKey(e.target.value)} placeholder='Enter the keyword' />
         </Form.Group>
         <Button variant='primary' type='submit' onClick={(e)=>buildCipher(e)}>Submit</Button>
         <Form.Group className='mb-3' controlId='cipher'>

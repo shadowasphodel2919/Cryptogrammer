@@ -41,7 +41,7 @@ export const Caeser = () => {
         </Form.Group>
         <Form.Group className='mb-3' controlId='shift'>
             <Form.Label>Shift</Form.Label>
-            <Form.Control type='number' onChange={(e)=>setShift(e.target.value)} placeholder='Enter the shift' />
+            <Form.Control type='number' onChange={(e)=>setShift(e.target.value)} placeholder='Enter the shift/number' />
         </Form.Group>
         <Form.Group className='mb-3' controlId='cipher'>
             <Form.Label>Cipher Text</Form.Label>

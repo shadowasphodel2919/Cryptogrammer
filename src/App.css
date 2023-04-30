@@ -102,8 +102,13 @@ p{
   margin: 0px !important;
 }
 
+h2{
+  color: #ddd;
+}
+
 table, tbody tr, tbody td{
-  border: 1px black solid;
+  border: 1px white solid;
+  color: #ddd !important;
 }
 
 tbody td{

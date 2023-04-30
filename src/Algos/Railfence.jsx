@@ -52,14 +52,16 @@ export const Railfence = () => {
         setCipher(result)
         setTable(rows);
     }
-    return (<><Form>
+    return (<>
+      <h2>Railfence Cipher</h2>
+      <Form>
         <Form.Group className='mb-3' controlId='message'>
             <Form.Label>Plain Text</Form.Label>
             <Form.Control type='text'  onChange={(e)=>setMessage(e.target.value)} placeholder='Enter Message' />
         </Form.Group>
         <Form.Group className='mb-3' controlId='key'>
             <Form.Label>Key</Form.Label>
-            <Form.Control type='text' onChange={(e)=>setKey(e.target.value)} placeholder='Enter the key' />
+            <Form.Control type='number' onChange={(e)=>setKey(e.target.value)} placeholder='Enter the key/rows' />
         </Form.Group>
         <Button variant='primary' type='submit' onClick={(e)=>buildCipher(e)}>Submit</Button>
         <Form.Group className='mb-3' controlId='cipher'>

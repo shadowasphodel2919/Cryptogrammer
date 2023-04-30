@@ -122,7 +122,7 @@ export const Playfair = () => {
         </Form.Group>
         <Form.Group className='mb-3' controlId='key'>
             <Form.Label>Key</Form.Label>
-            <Form.Control style={{textTransform: 'uppercase'}} type='text' onChange={(e)=>setKey(e.target.value)} placeholder='Enter the key' />
+            <Form.Control style={{textTransform: 'uppercase'}} type='text' onChange={(e)=>setKey(e.target.value)} placeholder='Enter the keyword' />
         </Form.Group>
         <Form.Group className='mb-3' controlId='cipher'>
             <Form.Label>Cipher Text</Form.Label>
