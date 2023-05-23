@@ -28,6 +28,11 @@ export const Algorithms = () => {
                     <p>Railfence Cipher</p>
                 </div>
             </a>
+            <a href="/algorithms/beaufort">
+                <div className="card">
+                    <p>Beaufort Cipher</p>
+                </div>
+            </a>
 
             {/* <Link as={Link} to="atbash">Atbash Cipher</Link> */}
         </section>

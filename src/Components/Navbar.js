@@ -63,7 +63,6 @@ const Header = () => {
             <Box sx={{flexGrow:1, display: {xs: 'flex', md: 'none'}}}>
               <IconButton
                 size="large"
-                aria-label="account of current user"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleOpenNavMenu}
@@ -89,21 +88,21 @@ const Header = () => {
                   display: { xs: 'block', md: 'none' },
                 }}
               >
-                
-                {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
-                    <Typography textAlign="center">{page}</Typography>
-                  </MenuItem>
-                ))}
+                <MenuItem key='Articles' as={Link} to="articles" onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">Articles</Typography>
+                </MenuItem>
+                <MenuItem key='Algorithms' as={Link} to="algorithms" onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">Algorithms</Typography>
+                </MenuItem>
               </Menu>
             </Box>
 
-            <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+            {/* <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} /> */}
             <Typography
               variant="h5"
               noWrap
               component="a"
-              href=""
+              href="/"
               sx={{
                 mr: 2,
                 display: { xs: 'flex', md: 'none' },
@@ -115,7 +114,7 @@ const Header = () => {
                 textDecoration: 'none',
               }}
             >
-              LOGO
+              CRYPTOGRAMMER
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               <Button

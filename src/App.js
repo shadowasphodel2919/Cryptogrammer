@@ -11,6 +11,7 @@ import { Vignere } from './Algos/Vignere';
 import { Playfair } from './Algos/Playfair';
 import Atbash from './Algos/Atbash';
 import { Railfence } from './Algos/Railfence';
+import { Beaufort } from './Algos/Beaufort';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="algorithms/playfair"element={<Playfair/>} />
           <Route path="algorithms/atbash" element={<Atbash />} />
           <Route path="algorithms/railfence" element={<Railfence />} />
+          <Route path="algorithms/beaufort" element={<Beaufort />} />
           </Route>
       </Routes>
     </BrowserRouter>
