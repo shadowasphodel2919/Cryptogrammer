@@ -1,5 +1,3 @@
-// import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
 import { useState } from "react";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -48,15 +46,18 @@ export const Beaufort = () => {
                 kCode = (kCode-97)%97
             if(mCode>=65 && mCode<=90){
                 mCode = (mCode-65)%65
-                mCode = Math.abs(mCode-kCode)%26
+                mCode = (kCode-mCode)%26
+                if(mCode<0)mCode = 26+mCode;
                 mCode = mCode+65
-            }
+                console.log(kCode + " " + mCode);
+              }
             if(mCode>=97 && kCode<=122){
-                mCode = (mCode-97)%97
-                mCode = Math.abs(mCode-kCode)%26
-                mCode = mCode+97
+              mCode = (mCode-97)%97
+              mCode = (kCode-mCode)%26
+              if(mCode<0)mCode = 26+mCode;
+              mCode = mCode+97
+              console.log(kCode + " " + mCode);
             }
-            console.log(kCode + " " + mCode);
             let cipherChar = String.fromCharCode(mCode);
             cipherText += cipherChar;
         }
