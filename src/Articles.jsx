@@ -5,7 +5,7 @@ export const Articles = () => {
     .then(data=>{
         const res = data.items
         console.log(res);
-        const posts = res.filter(item=>item.categories.length>=0)
+        const posts = res.filter(item=>(item.categories.length>=0 && item.categories.includes("cryptography")))
         function toText(node){
             let tag = document.createElement('div')
             tag.innerHTML = node
