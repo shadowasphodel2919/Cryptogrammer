@@ -12,6 +12,7 @@ import { Playfair } from './Algos/Playfair';
 import Atbash from './Algos/Atbash';
 import { Railfence } from './Algos/Railfence';
 import { Beaufort } from './Algos/Beaufort';
+import { RSA } from './Algos/RSA';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="algorithms/atbash" element={<Atbash />} />
           <Route path="algorithms/railfence" element={<Railfence />} />
           <Route path="algorithms/beaufort" element={<Beaufort />} />
+          <Route path="algorithms/rsa" element={<RSA />} />
           </Route>
       </Routes>
     </BrowserRouter>
