@@ -44,6 +44,11 @@ export const RSA = () => {
     const [validPQ, setValidPQ] = useState(false)
     const [validD, setValidD] = useState(false)
     const [init, setInit] = useState(false)
+    const [decode, setDecode] = useState(false)
+    const [codedMsg, setCodedMsg] = useState("")
+    const [decodedMsg, setDecodedMsg] = useState("")
+    const [num, setNum] = useState(0)
+    const [key, setKey] = useState(0);
     useEffect(() => {
       if (tf > 0) {
         setValidE(findE(tf));
@@ -137,10 +142,11 @@ export const RSA = () => {
       }
       return encodedNum;
     }
-    function rsaDecode(message, d, n){
+    function rsaDecode(str, d, n){
+      let coded = str.split(" ")
       let decodedNum = [];
-      for (let i = 0; i < cipher.length; i++) {
-        let char = bigInt(cipher[i]).pow(d).mod(n);
+      for (let i = 0; i < coded.length; i++) {
+        let char = bigInt(coded[i]).pow(d).mod(n);
         decodedNum.push(char);
       }
       let decodedMessage = '';
@@ -150,11 +156,56 @@ export const RSA = () => {
       }
       return decodedMessage;
     }
+    function changePanel(){
+      setDecode(true)
+    }
+    const decodeMessage = () => {
+      setDecodedMsg(rsaDecode(codedMsg, key, num))
+    }
     return (<ThemeProvider theme={theme}>
         <CssBaseline />
+        {decode?<>
+          <Container>
+          <Details>
+          <TextField
+            id="outlined"
+            label="d"
+            value={key}
+            onChange={(e)=>setKey(e.target.value)}
+          />
+          <TextField
+            id="outlined"
+            label="n"
+            value={num}
+            onChange={(e)=>setNum(e.target.value)}
+          />
+          <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={(e)=>decodeMessage(e)}>Decode</Button>
+          </Details>
+          <Main>
+            <TextField
+              placeholder="Enter Encoded Text"
+              multiline
+              rows={10}
+              style={{width: 400}}
+              onChange={(e)=>setCodedMsg(e.target.value)}
+            />
+            <TextField
+              placeholder="Decoded Text"
+              multiline
+              value={decodedMsg}
+              rows={10}
+              style={{width: 400}}
+            />
+          </Main>
+        </Container>
+        </>:<>
         {!init ? 
         <Container>
         <>
+        <Button variant="contained" color="primary" onClick={(e)=>changePanel()}>Decode Instead</Button>
         <TextField
           required
           id="outlined-required"
@@ -282,5 +333,6 @@ export const RSA = () => {
             />
           </Main>
       </Container>}
+      </>}
     </ThemeProvider>);
 }
