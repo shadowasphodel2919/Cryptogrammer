@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import bigInt from "big-integer";
 const theme = createTheme({
     palette: {
       mode: 'dark',
@@ -16,6 +17,20 @@ const Container = styled('div')({
     height: '100vh',
     gap: 10,
   });
+const Details = styled('div')({
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  });
+const Main = styled('div')({
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  });
 export const RSA = () => {
     const [p, setP] = useState(0)
     const [q, setQ] = useState(0)
@@ -23,14 +38,20 @@ export const RSA = () => {
     const [cp, setCp] = useState(0)
     const [d, setd] = useState(0)
     const [tf, setTf] = useState(0)
+    const [message, setMessage] = useState("")
+    const [cipher, setCipher] = useState("")
     const [validE, setValidE] = useState([])
     const [validPQ, setValidPQ] = useState(false)
     const [validD, setValidD] = useState(false)
+    const [init, setInit] = useState(false)
     useEffect(() => {
       if (tf > 0) {
         setValidE(findE(tf));
       }
     }, [tf]);
+    useEffect(() => {
+      setCipher(rsaEncode(message,cp,n).join(' '));
+    }, [message])
     function gcd(a, b) {
       if (b === 0) {
         return a;
@@ -101,9 +122,37 @@ export const RSA = () => {
     const step2 = (e) => {
       setd(modInverse(cp,tf))
       setValidD(true)
-    }    
+      setInit(true)
+    }
+    function rsaEncode(message, e, n) {
+      let messageNum = [];
+      for (let i = 0; i < message.length; i++) {
+        messageNum.push(message.charCodeAt(i));
+      }
+      let encodedNum = [];
+      for (let i = 0; i < messageNum.length; i++) {
+        let char = messageNum[i];
+        let encodedChar = bigInt(char).pow(e).mod(n);
+        encodedNum.push(encodedChar.toString(10));
+      }
+      return encodedNum;
+    }
+    function rsaDecode(message, d, n){
+      let decodedNum = [];
+      for (let i = 0; i < cipher.length; i++) {
+        let char = bigInt(cipher[i]).pow(d).mod(n);
+        decodedNum.push(char);
+      }
+      let decodedMessage = '';
+      for (let i = 0; i < decodedNum.length; i++) {
+        let charCode = decodedNum[i];
+        decodedMessage += String.fromCharCode(charCode);
+      }
+      return decodedMessage;
+    }
     return (<ThemeProvider theme={theme}>
         <CssBaseline />
+        {!init ? 
         <Container>
         <>
         <TextField
@@ -172,5 +221,66 @@ export const RSA = () => {
           </>
         }
         </Container>
+        :
+        <Container>
+          <Details>
+          <TextField
+            id="outlined"
+            label="p"
+            value={p}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+          <TextField
+            id="outlined"
+            label="q"
+            value={q}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+          <TextField
+            id="outlined"
+            label="n"
+            value={n}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+          <TextField
+            id="outlined"
+            label="Totient Function"
+            value={tf}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+          <TextField
+            id="outlined"
+            label="e"
+            value={cp}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+          </Details>
+          <Main>
+            <TextField
+              placeholder="Enter Message"
+              multiline
+              rows={10}
+              style={{width: 400}}
+              onChange={(e)=>setMessage(e.target.value)}
+            />
+            <TextField
+              placeholder="Encoded Text"
+              multiline
+              value={cipher}
+              rows={10}
+              style={{width: 400}}
+            />
+          </Main>
+      </Container>}
     </ThemeProvider>);
 }
