@@ -49,6 +49,8 @@ export const RSA = () => {
     const [decodedMsg, setDecodedMsg] = useState("")
     const [num, setNum] = useState(0)
     const [key, setKey] = useState(0);
+    const [err1, setErr1] = useState("")
+    const [err2, setErr2] = useState("")
     useEffect(() => {
       if (tf > 0) {
         setValidE(findE(tf));
@@ -162,6 +164,22 @@ export const RSA = () => {
     const decodeMessage = () => {
       setDecodedMsg(rsaDecode(codedMsg, key, num))
     }
+    const handleP = (val) => {
+      setP(val)
+      if(val !== '' && !isPrime(val)){
+        setErr1("Please enter a prime number")
+      }else{
+        setErr1('')
+      }
+    }
+    const handleQ = (val) => {
+      setQ(val)
+      if(val !== '' && !isPrime(val)){
+        setErr2("Please enter a prime number")
+      }else{
+        setErr2('')
+      }
+    }
     return (<ThemeProvider theme={theme}>
         <CssBaseline />
         {decode?<>
@@ -210,13 +228,19 @@ export const RSA = () => {
           required
           id="outlined-required"
           label="Select P"
-          onChange={(e)=>setP(e.target.value)}
+          onChange={(e)=>handleP(e.target.value)}
+          type="number"
+          error={err1 !== ''}
+          helperText={err1}
         />
         <TextField
           required
           id="outlined-required"
           label="Select Q"
-          onChange={(e)=>setQ(e.target.value)}
+          onChange={(e)=>handleQ(e.target.value)}
+          type="number"
+          error={err2 !== ''}
+          helperText={err2}
         />
         {!validPQ && <Button type="submit" variant="contained" color="primary" onClick={(e)=>step1(e)}>
           Calculate n,φ(n)
