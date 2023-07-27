@@ -94,7 +94,7 @@ const LsbSteganography = () => {
 
   const encodeMessage = () => {
     console.log("Here")
-    const bin_message = stringToBinary(message+"&")
+    const bin_message = stringToBinary(message+"%")
     const N = bin_message.length
     console.log(bin_message + " " + N);
     const reader = new FileReader();
