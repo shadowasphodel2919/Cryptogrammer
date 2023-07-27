@@ -157,7 +157,7 @@ const LsbSteganography = () => {
       for (let i = 0; i < bin_message.length; i += 8) {
           const byte = bin_message.substr(i, 8);
           const char = String.fromCharCode(parseInt(byte, 2));
-          if (char === '&') {
+          if (char === '%') {
               break;
           } else {
               message += char;
