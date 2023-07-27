@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "./Components/Navbar.js";
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Home } from './Home';
 import { Articles } from './Articles';
 import { Algorithms } from './Algorithms';
 import { Caeser } from './Algos/Caeser';
@@ -13,6 +12,7 @@ import Atbash from './Algos/Atbash';
 import { Railfence } from './Algos/Railfence';
 import { Beaufort } from './Algos/Beaufort';
 import { RSA } from './Algos/RSA';
+import LsbSteganography from './Algos/LsbSteganography';
 
 function App() {
   return (
@@ -30,6 +30,7 @@ function App() {
           <Route path="algorithms/railfence" element={<Railfence />} />
           <Route path="algorithms/beaufort" element={<Beaufort />} />
           <Route path="algorithms/rsa" element={<RSA />} />
+          <Route path="steganography" element={<LsbSteganography />} />
           </Route>
       </Routes>
     </BrowserRouter>

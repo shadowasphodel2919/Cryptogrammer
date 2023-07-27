@@ -94,6 +94,9 @@ const Header = () => {
                 <MenuItem key='Algorithms' as={Link} to="algorithms" onClick={handleCloseNavMenu}>
                   <Typography textAlign="center">Algorithms</Typography>
                 </MenuItem>
+                <MenuItem key='Steganography' as={Link} to="steganography" onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">Steganography</Typography>
+                </MenuItem>
               </Menu>
             </Box>
 
@@ -130,6 +133,13 @@ const Header = () => {
                 as={Link} to="algorithms"
               >
                 Algorithms
+              </Button>
+              <Button
+                key='Steganography'
+                sx={{my:2, color:'white',display:'block'}}
+                as={Link} to="steganography"
+              >
+                Steganography
               </Button>
             </Box>
         </Toolbar>
