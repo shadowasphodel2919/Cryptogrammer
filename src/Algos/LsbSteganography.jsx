@@ -26,6 +26,11 @@ const Main = styled('div')({
   justifyContent: 'center',
   gap: 10,
 });
+const Img = styled('img')({
+  height: '40vh',
+  width: '20vw',
+  objectFit: 'cover'
+})
 const LsbSteganography = () => {
   const [init, setInit] = useState(false)
   const [encode, setEncode] = useState(true);
@@ -227,7 +232,7 @@ const LsbSteganography = () => {
         
         {inputImg &&
         <>
-        <img src={URL.createObjectURL(inputImg)} alt="InputImage" />
+        <Img src={URL.createObjectURL(inputImg)} alt="InputImage" />
         <Main>
         <Button
         component="label"
@@ -275,7 +280,7 @@ const LsbSteganography = () => {
               >
                 Download
               </Button>
-              <img
+              <Img
                 src={encodedImg}
                 alt="Encoded Image"
               />
