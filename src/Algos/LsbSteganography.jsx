@@ -33,6 +33,7 @@ const Img = styled('img')({
   objectFit: 'cover'
 })
 const LsbSteganography = () => {
+  const [showDecodeError, setShowDecodeError] = useState(false);
   const [init, setInit] = useState(false)
   const [encode, setEncode] = useState(true);
 
@@ -42,19 +43,6 @@ const LsbSteganography = () => {
 
   //decoding states
   const [decodedMsg, setDecodedMsg] = useState("")
-
-  // const handleFileUpload = (e) => {
-  //   const file = e.target.files[0];
-  //   setInit(false)
-  //   setEncode(true)
-  //   if (file && file.type === "image/png") {
-  //     setInputImg(file);
-  //     setEncodedImg(null);
-  //   } else {
-  //     setInputImg(null);
-  //     setEncodedImg(null);
-  //   }
-  // }
 
   function stringToBinary(message) {
     let bin_message = '';
@@ -90,7 +78,6 @@ const LsbSteganography = () => {
         }
     }
 
-    // Draw the ImageData onto the canvas
     ctx.putImageData(imageData, 0, 0);
 
     // Create a new image and set its source to the canvas data
@@ -104,6 +91,12 @@ const LsbSteganography = () => {
     setInit(false)
     setEncode(true)
     if (file && (file.type === "image/png" || file.type === "image/jpeg" || file.type === "image/jpg")) {
+      if(file.type === "image/jpeg" || file.type === "image/jpg"){
+        setShowDecodeError(true);
+      }
+      else{
+        setShowDecodeError(false);
+      }
       // Convert the image to a PNG image
       convertToPng(file)
         .then((pngImage) => {
@@ -158,7 +151,6 @@ const LsbSteganography = () => {
 
 
   const encodeMessage = () => {
-    console.log("Here")
     const bin_message = stringToBinary(message+"%")
     const N = bin_message.length
     console.log(bin_message + " " + N);
@@ -231,6 +223,12 @@ const LsbSteganography = () => {
       return message;
   }
   const decodeMessage = () => {
+    console.log(inputImg.type)
+    if (showDecodeError) {
+      // Show an error message since the file is not a PNG image
+      alert("Please upload a valid PNG image for decoding.");
+      return;
+    }
     const reader = new FileReader();
     reader.onload = function(e){
       const img = new Image();
@@ -286,7 +284,7 @@ const LsbSteganography = () => {
           startIcon={<UploadFileIcon />}
           sx={{ marginRight: "1rem" }}
         >
-          Upload PNG image
+          Upload image
           <input type="file" accept="image/*" hidden onChange={handleFileUpload} />
         </Button>
         
