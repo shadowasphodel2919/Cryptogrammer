@@ -17,6 +17,7 @@ const Container = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
   height: '100vh',
+  paddingTop: '20vh',
   gap: 10,
 });
 const Main = styled('div')({
@@ -42,16 +43,18 @@ const LsbSteganography = () => {
   //decoding states
   const [decodedMsg, setDecodedMsg] = useState("")
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type === "image/png") {
-      setInputImg(file);
-      setEncodedImg(null);
-    } else {
-      setInputImg(null);
-      setEncodedImg(null);
-    }
-  }
+  // const handleFileUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   setInit(false)
+  //   setEncode(true)
+  //   if (file && file.type === "image/png") {
+  //     setInputImg(file);
+  //     setEncodedImg(null);
+  //   } else {
+  //     setInputImg(null);
+  //     setEncodedImg(null);
+  //   }
+  // }
 
   function stringToBinary(message) {
     let bin_message = '';
@@ -94,6 +97,63 @@ const LsbSteganography = () => {
     const image = new Image();
     image.src = canvas.toDataURL();
     setEncodedImg(canvas.toDataURL())
+  }
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    setInit(false)
+    setEncode(true)
+    if (file && (file.type === "image/png" || file.type === "image/jpeg" || file.type === "image/jpg")) {
+      // Convert the image to a PNG image
+      convertToPng(file)
+        .then((pngImage) => {
+          setInputImg(pngImage);
+          setEncodedImg(null);
+        })
+        .catch((error) => {
+          console.error("Error converting image to PNG:", error);
+          setInputImg(null);
+          setEncodedImg(null);
+        });
+    } else {
+      setInputImg(null);
+      setEncodedImg(null);
+    }
+  }
+
+  // Function to convert any image to a PNG image using the FileReader API
+  const convertToPng = (imageFile) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+          // Convert the image to PNG format by drawing it onto a canvas and then converting the canvas to data URL
+          const dataUrl = canvas.toDataURL('image/png');
+          const pngImage = dataURLToBlob(dataUrl);
+          resolve(pngImage);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(imageFile);
+    });
+  }
+
+  // Helper function to convert data URL to a Blob object
+  const dataURLToBlob = (dataURL) => {
+    const byteString = atob(dataURL.split(',')[1]);
+    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+    const arrayBuffer = new ArrayBuffer(byteString.length);
+    const uint8Array = new Uint8Array(arrayBuffer);
+    for (let i = 0; i < byteString.length; i++) {
+      uint8Array[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([arrayBuffer], { type: mimeString });
   }
 
 
@@ -227,7 +287,7 @@ const LsbSteganography = () => {
           sx={{ marginRight: "1rem" }}
         >
           Upload PNG image
-          <input type="file" accept=".png" hidden onChange={handleFileUpload} />
+          <input type="file" accept="image/*" hidden onChange={handleFileUpload} />
         </Button>
         
         {inputImg &&
