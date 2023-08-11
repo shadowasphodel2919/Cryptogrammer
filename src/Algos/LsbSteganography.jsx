@@ -93,6 +93,7 @@ const LsbSteganography = () => {
   }
 
   const handleFileUpload = (e) => {
+    console.log("DEBUG: handleFileUpload start")
     setLoader(true);
     const file = e.target.files[0];
     setInit(false)
@@ -120,6 +121,7 @@ const LsbSteganography = () => {
       setEncodedImg(null);
     }
     setLoader(false);
+    console.log("DEBUG: handleFileUpload end")
   }
 
   // Function to convert any image to a PNG image using the FileReader API
