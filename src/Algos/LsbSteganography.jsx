@@ -306,14 +306,14 @@ const LsbSteganography = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      {isLoading ? (<Box sx={{ display: 'flex' }}>
-        <CircularProgress />
-      </Box>
-      ) :
-        (
-          <>
-            <CssBaseline />
-            <Container>
+      <CssBaseline />
+      <Container>
+        {isLoading ? (<Box sx={{ display: 'flex' }}>
+          <CircularProgress />
+        </Box>
+        ) :
+          (
+            <>
               <Button
                 component="label"
                 variant="contained"
@@ -396,7 +396,8 @@ const LsbSteganography = () => {
                         />
                       </>)}</>}
                 </>}
-            </Container></>)}
+            </>)}
+      </Container>
     </ThemeProvider>
   );
 }
