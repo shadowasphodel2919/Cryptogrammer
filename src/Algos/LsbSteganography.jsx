@@ -59,6 +59,7 @@ const LsbSteganography = () => {
 
   // Function to convert the outputArray to an image
   function arrayToImage(outputArray) {
+    console.log("DEBUG: arrayToImage start")
     setLoader(true);
     // Create a new canvas to draw the image data
     const canvas = document.createElement('canvas');
@@ -90,6 +91,7 @@ const LsbSteganography = () => {
     image.src = canvas.toDataURL();
     setEncodedImg(canvas.toDataURL())
     setLoader(false);
+    console.log("DEBUG: arrayToImage start")
   }
 
   const handleFileUpload = (e) => {
@@ -110,22 +112,26 @@ const LsbSteganography = () => {
         .then((pngImage) => {
           setInputImg(pngImage);
           setEncodedImg(null);
+          setLoader(false);
         })
         .catch((error) => {
           console.error("Error converting image to PNG:", error);
           setInputImg(null);
           setEncodedImg(null);
+          setLoader(false);
         });
     } else {
       setInputImg(null);
       setEncodedImg(null);
+      setLoader(false);
     }
-    setLoader(false);
     console.log("DEBUG: handleFileUpload end")
   }
 
   // Function to convert any image to a PNG image using the FileReader API
   const convertToPng = (imageFile) => {
+    console.log("DEBUG: convertToPng start")
+
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = function (e) {
@@ -140,15 +146,18 @@ const LsbSteganography = () => {
           const dataUrl = canvas.toDataURL('image/png');
           const pngImage = dataURLToBlob(dataUrl);
           resolve(pngImage);
+          setLoader(false)
         };
         img.src = e.target.result;
       };
       reader.readAsDataURL(imageFile);
     });
+    console.log("DEBUG: convertToPng start")
   }
 
   // Helper function to convert data URL to a Blob object
   const dataURLToBlob = (dataURL) => {
+    console.log("DEBUG: dataURLToBlob start")
     setLoader(true);
     const byteString = atob(dataURL.split(',')[1]);
     const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
@@ -158,11 +167,13 @@ const LsbSteganography = () => {
       uint8Array[i] = byteString.charCodeAt(i);
     }
     setLoader(false);
+    console.log("DEBUG: dataURLToBlob start")
     return new Blob([arrayBuffer], { type: mimeString });
   }
 
 
   const encodeMessage = () => {
+    console.log("DEBUG: encodeMessage start")
     setLoader(true);
     const bin_message = stringToBinary(message + "%")
     const N = bin_message.length
@@ -214,12 +225,13 @@ const LsbSteganography = () => {
         }
         console.log(outputArray);
         arrayToImage(outputArray)
+        setLoader(false)
       };
       img.src = e.target.result;
     };
 
     reader.readAsDataURL(inputImg);
-    setLoader(false);
+    console.log("DEBUG: encodeMessage end")
   }
 
   // Function to convert binary message to a human-readable string
@@ -238,6 +250,7 @@ const LsbSteganography = () => {
   }
 
   const decodeMessage = () => {
+    console.log("DEBUG: decodeMessage start")
     setLoader(true)
     console.log(inputImg.type)
     if (showDecodeError) {
@@ -282,12 +295,13 @@ const LsbSteganography = () => {
         }
         console.log(msg);
         setDecodedMsg(binaryToMessage(msg))
+        setLoader(false)
       };
       img.src = e.target.result;
     };
 
     reader.readAsDataURL(inputImg);
-    setLoader(false)
+    console.log("DEBUG: decodeMessage end")
   }
 
   return (
