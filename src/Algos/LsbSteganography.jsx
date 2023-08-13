@@ -4,6 +4,9 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+
 // import { getOpenCv } from "./loader";
 const theme = createTheme({
   palette: {
@@ -40,6 +43,7 @@ const LsbSteganography = () => {
   const [inputImg, setInputImg] = useState(null);
   const [message, setMessage] = useState("");
   const [encodedImg, setEncodedImg] = useState(null);
+  const [isLoading, setLoader] = useState(false);
 
   //decoding states
   const [decodedMsg, setDecodedMsg] = useState("")
@@ -47,14 +51,16 @@ const LsbSteganography = () => {
   function stringToBinary(message) {
     let bin_message = '';
     for (let i = 0; i < message.length; i++) {
-        const binaryChar = message.charCodeAt(i).toString(2).padStart(8, '0');
-        bin_message += binaryChar;
+      const binaryChar = message.charCodeAt(i).toString(2).padStart(8, '0');
+      bin_message += binaryChar;
     }
     return bin_message;
   }
 
   // Function to convert the outputArray to an image
   function arrayToImage(outputArray) {
+    console.log("DEBUG: arrayToImage start")
+    setLoader(true);
     // Create a new canvas to draw the image data
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -69,13 +75,13 @@ const LsbSteganography = () => {
     // Fill the ImageData with the pixel data from the outputArray
     let index = 0;
     for (let y = 0; y < canvas.height; y++) {
-        for (let x = 0; x < canvas.width; x++) {
-            imageData.data[index] = outputArray[y][x][0];     // Red channel
-            imageData.data[index + 1] = outputArray[y][x][1]; // Green channel
-            imageData.data[index + 2] = outputArray[y][x][2]; // Blue channel
-            imageData.data[index + 3] = outputArray[y][x][3]; // Alpha channel
-            index += 4; // Move to the next pixel (4 channels per pixel)
-        }
+      for (let x = 0; x < canvas.width; x++) {
+        imageData.data[index] = outputArray[y][x][0];     // Red channel
+        imageData.data[index + 1] = outputArray[y][x][1]; // Green channel
+        imageData.data[index + 2] = outputArray[y][x][2]; // Blue channel
+        imageData.data[index + 3] = outputArray[y][x][3]; // Alpha channel
+        index += 4; // Move to the next pixel (4 channels per pixel)
+      }
     }
 
     ctx.putImageData(imageData, 0, 0);
@@ -84,17 +90,21 @@ const LsbSteganography = () => {
     const image = new Image();
     image.src = canvas.toDataURL();
     setEncodedImg(canvas.toDataURL())
+    setLoader(false);
+    console.log("DEBUG: arrayToImage start")
   }
 
   const handleFileUpload = (e) => {
+    console.log("DEBUG: handleFileUpload start")
+    setLoader(true);
     const file = e.target.files[0];
     setInit(false)
     setEncode(true)
     if (file && (file.type === "image/png" || file.type === "image/jpeg" || file.type === "image/jpg")) {
-      if(file.type === "image/jpeg" || file.type === "image/jpg"){
+      if (file.type === "image/jpeg" || file.type === "image/jpg") {
         setShowDecodeError(true);
       }
-      else{
+      else {
         setShowDecodeError(false);
       }
       // Convert the image to a PNG image
@@ -102,20 +112,26 @@ const LsbSteganography = () => {
         .then((pngImage) => {
           setInputImg(pngImage);
           setEncodedImg(null);
+          setLoader(false);
         })
         .catch((error) => {
           console.error("Error converting image to PNG:", error);
           setInputImg(null);
           setEncodedImg(null);
+          setLoader(false);
         });
     } else {
       setInputImg(null);
       setEncodedImg(null);
+      setLoader(false);
     }
+    console.log("DEBUG: handleFileUpload end")
   }
 
   // Function to convert any image to a PNG image using the FileReader API
   const convertToPng = (imageFile) => {
+    console.log("DEBUG: convertToPng start")
+
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = function (e) {
@@ -130,15 +146,19 @@ const LsbSteganography = () => {
           const dataUrl = canvas.toDataURL('image/png');
           const pngImage = dataURLToBlob(dataUrl);
           resolve(pngImage);
+          setLoader(false)
         };
         img.src = e.target.result;
       };
       reader.readAsDataURL(imageFile);
     });
+    console.log("DEBUG: convertToPng start")
   }
 
   // Helper function to convert data URL to a Blob object
   const dataURLToBlob = (dataURL) => {
+    console.log("DEBUG: dataURLToBlob start")
+    setLoader(true);
     const byteString = atob(dataURL.split(',')[1]);
     const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
     const arrayBuffer = new ArrayBuffer(byteString.length);
@@ -146,16 +166,20 @@ const LsbSteganography = () => {
     for (let i = 0; i < byteString.length; i++) {
       uint8Array[i] = byteString.charCodeAt(i);
     }
+    setLoader(false);
+    console.log("DEBUG: dataURLToBlob start")
     return new Blob([arrayBuffer], { type: mimeString });
   }
 
 
   const encodeMessage = () => {
-    const bin_message = stringToBinary(message+"%")
+    console.log("DEBUG: encodeMessage start")
+    setLoader(true);
+    const bin_message = stringToBinary(message + "%")
     const N = bin_message.length
     console.log(bin_message + " " + N);
     const reader = new FileReader();
-    reader.onload = function(e){
+    reader.onload = function (e) {
       const img = new Image();
       img.onload = function () {
         const canvas = document.createElement('canvas');
@@ -169,30 +193,30 @@ const LsbSteganography = () => {
         const imageArray = new Array(img.height);
         let index = 0;
         for (let y = 0; y < img.height; y++) {
-            imageArray[y] = new Array(img.width);
-            for (let x = 0; x < img.width; x++) {
-                imageArray[y][x] = [
-                    pixelData[index],         // Red channel
-                    pixelData[index + 1],     // Green channel
-                    pixelData[index + 2],     // Blue channel
-                    pixelData[index + 3],     // Alpha channel
-                ];
-                index += 4; // Move to the next pixel (4 channels per pixel)
-            }
-        }  
-        let count = 0   
-        const outputArray = Array.from(imageArray)   
+          imageArray[y] = new Array(img.width);
+          for (let x = 0; x < img.width; x++) {
+            imageArray[y][x] = [
+              pixelData[index],         // Red channel
+              pixelData[index + 1],     // Green channel
+              pixelData[index + 2],     // Blue channel
+              pixelData[index + 3],     // Alpha channel
+            ];
+            index += 4; // Move to the next pixel (4 channels per pixel)
+          }
+        }
+        let count = 0
+        const outputArray = Array.from(imageArray)
         console.log(imageArray);
-        for(let i = 0; i < imageArray.length; i++){
-          for(let j = 0; j < imageArray[0].length; j++){
-            if(count < N){
-              console.log("count"+count+ " "+ N+ " " + imageArray[i][j].length)
-              for(let k = 0; k < imageArray[i][j].length; k++){
-                let LSB = imageArray[i][j][k]&1
+        for (let i = 0; i < imageArray.length; i++) {
+          for (let j = 0; j < imageArray[0].length; j++) {
+            if (count < N) {
+              console.log("count" + count + " " + N + " " + imageArray[i][j].length)
+              for (let k = 0; k < imageArray[i][j].length; k++) {
+                let LSB = imageArray[i][j][k] & 1
                 console.log(LSB);
-                if(LSB!=parseInt(bin_message.charAt(Math.min(count, N-1)))){
+                if (LSB != parseInt(bin_message.charAt(Math.min(count, N - 1)))) {
                   console.log("Changed bit");
-                  outputArray[i][j][k] = (imageArray[i][j][k] & ~1) | parseInt(bin_message.charAt(Math.min(count, N-1)))
+                  outputArray[i][j][k] = (imageArray[i][j][k] & ~1) | parseInt(bin_message.charAt(Math.min(count, N - 1)))
                 }
                 count += 1
               }
@@ -201,28 +225,33 @@ const LsbSteganography = () => {
         }
         console.log(outputArray);
         arrayToImage(outputArray)
+        setLoader(false)
       };
       img.src = e.target.result;
-      };
-      
-      reader.readAsDataURL(inputImg);
+    };
+
+    reader.readAsDataURL(inputImg);
+    console.log("DEBUG: encodeMessage end")
   }
 
   // Function to convert binary message to a human-readable string
   function binaryToMessage(bin_message) {
-      let message = "";
-      for (let i = 0; i < bin_message.length; i += 8) {
-          const byte = bin_message.substr(i, 8);
-          const char = String.fromCharCode(parseInt(byte, 2));
-          if (char === '%') {
-              break;
-          } else {
-              message += char;
-          }
+    let message = "";
+    for (let i = 0; i < bin_message.length; i += 8) {
+      const byte = bin_message.substr(i, 8);
+      const char = String.fromCharCode(parseInt(byte, 2));
+      if (char === '%') {
+        break;
+      } else {
+        message += char;
       }
-      return message;
+    }
+    return message;
   }
+
   const decodeMessage = () => {
+    console.log("DEBUG: decodeMessage start")
+    setLoader(true)
     console.log(inputImg.type)
     if (showDecodeError) {
       // Show an error message since the file is not a PNG image
@@ -230,7 +259,7 @@ const LsbSteganography = () => {
       return;
     }
     const reader = new FileReader();
-    reader.onload = function(e){
+    reader.onload = function (e) {
       const img = new Image();
       img.onload = function () {
         const canvas = document.createElement('canvas');
@@ -244,121 +273,130 @@ const LsbSteganography = () => {
         const imageArray = new Array(img.height);
         let index = 0;
         for (let y = 0; y < img.height; y++) {
-            imageArray[y] = new Array(img.width);
-            for (let x = 0; x < img.width; x++) {
-                imageArray[y][x] = [
-                    pixelData[index],         // Red channel
-                    pixelData[index + 1],     // Green channel
-                    pixelData[index + 2],     // Blue channel
-                    pixelData[index + 3],     // Alpha channel
-                ];
-                index += 4; // Move to the next pixel (4 channels per pixel)
-            }
-        }  
+          imageArray[y] = new Array(img.width);
+          for (let x = 0; x < img.width; x++) {
+            imageArray[y][x] = [
+              pixelData[index],         // Red channel
+              pixelData[index + 1],     // Green channel
+              pixelData[index + 2],     // Blue channel
+              pixelData[index + 3],     // Alpha channel
+            ];
+            index += 4; // Move to the next pixel (4 channels per pixel)
+          }
+        }
         let msg = ""
-        for(let i = 0; i < imageArray.length; i++){
-          for(let j = 0; j < imageArray[0].length; j++){
-            for(let k = 0; k < imageArray[i][j].length; k++){
-              let LSB = imageArray[i][j][k]&1
+        for (let i = 0; i < imageArray.length; i++) {
+          for (let j = 0; j < imageArray[0].length; j++) {
+            for (let k = 0; k < imageArray[i][j].length; k++) {
+              let LSB = imageArray[i][j][k] & 1
               msg += LSB
             }
           }
         }
         console.log(msg);
         setDecodedMsg(binaryToMessage(msg))
+        setLoader(false)
       };
       img.src = e.target.result;
     };
-      
+
     reader.readAsDataURL(inputImg);
+    console.log("DEBUG: decodeMessage end")
   }
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container>
-      <Button
-          component="label"
-          variant="contained"
-          color="primary"
-          startIcon={<UploadFileIcon />}
-          sx={{ marginRight: "1rem" }}
-        >
-          Upload image
-          <input type="file" accept="image/*" hidden onChange={handleFileUpload} />
-        </Button>
-        
-        {inputImg &&
-        <>
-        <Img src={URL.createObjectURL(inputImg)} alt="InputImage" />
-        <Main>
-        <Button
-        component="label"
-        variant="contained"
-        color="primary"
-        onClick={(e)=>{setEncode(true);setInit(true);}}
-        sx={{ marginRight: "1rem" }}>Encode Image</Button>
-        <Button
-        component="label"
-        variant="contained"
-        color="primary"
-        onClick={(e)=>{setEncode(false);setInit(true);decodeMessage()}}
-        sx={{ marginRight: "1rem" }}>Decode Image</Button>
-        </Main>
-        </>
-        }
-        
-        {(encode && inputImg)?
-        <>
-        {(inputImg && init) && (
-          <>
-            <TextField
-              variant="outlined"
-              id="outlined-basic"
-              label="Enter message to Encode"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              sx={{ marginTop: "1rem" }}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={encodeMessage}
-              sx={{ marginTop: "1rem" }}
-            >
-              Encode Message
-            </Button>
-            {encodedImg && (
+        {isLoading ? (<Box sx={{ display: 'flex' }}>
+          <CircularProgress />
+        </Box>
+        ) :
+          (
             <>
               <Button
-              variant="contained"
-              color="primary"
-              href={encodedImg} download="encoded_image.png"
-              sx={{ marginTop: "1rem" }}
+                component="label"
+                variant="contained"
+                color="primary"
+                startIcon={<UploadFileIcon />}
+                sx={{ marginRight: "1rem" }}
               >
-                Download
+                Upload image
+                <input type="file" accept="image/*" hidden onChange={handleFileUpload} />
               </Button>
-              <Img
-                src={encodedImg}
-                alt="Encoded Image"
-              />
-              </>
-            )}
-          </>
-        )}
-        </>:
-        <>
-        {(inputImg && init) && <>
-        {decodedMsg && (
-        <>
-        <TextField variant="outlined"
-        id="outlined-basic"
-        label="Decoded Message"
-        value={decodedMsg}
-        sx={{marginTop: "1rem"}}
-        />
-        </>)}</>}
-        </>}
+
+              {inputImg &&
+                <>
+                  <Img src={URL.createObjectURL(inputImg)} alt="InputImage" />
+                  <Main>
+                    <Button
+                      component="label"
+                      variant="contained"
+                      color="primary"
+                      onClick={(e) => { setEncode(true); setInit(true); }}
+                      sx={{ marginRight: "1rem" }}>Encode Image</Button>
+                    <Button
+                      component="label"
+                      variant="contained"
+                      color="primary"
+                      onClick={(e) => { setEncode(false); setInit(true); decodeMessage() }}
+                      sx={{ marginRight: "1rem" }}>Decode Image</Button>
+                  </Main>
+                </>
+              }
+
+              {(encode && inputImg) ?
+                <>
+                  {(inputImg && init) && (
+                    <>
+                      <TextField
+                        variant="outlined"
+                        id="outlined-basic"
+                        label="Enter message to Encode"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        sx={{ marginTop: "1rem" }}
+                      />
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={encodeMessage}
+                        sx={{ marginTop: "1rem" }}
+                      >
+                        Encode Message
+                      </Button>
+                      {encodedImg && (
+                        <>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            href={encodedImg} download="encoded_image.png"
+                            sx={{ marginTop: "1rem" }}
+                          >
+                            Download
+                          </Button>
+                          <Img
+                            src={encodedImg}
+                            alt="Encoded Image"
+                          />
+                        </>
+                      )}
+                    </>
+                  )}
+                </> :
+                <>
+                  {(inputImg && init) && <>
+                    {decodedMsg && (
+                      <>
+                        <TextField variant="outlined"
+                          id="outlined-basic"
+                          label="Decoded Message"
+                          value={decodedMsg}
+                          sx={{ marginTop: "1rem" }}
+                        />
+                      </>)}</>}
+                </>}
+            </>)}
       </Container>
     </ThemeProvider>
   );
