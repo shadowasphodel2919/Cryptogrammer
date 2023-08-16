@@ -7,7 +7,6 @@ import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 
-// import { getOpenCv } from "./loader";
 const theme = createTheme({
   palette: {
     mode: 'dark',
@@ -139,9 +138,23 @@ const LsbSteganography = () => {
         img.onload = function () {
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.drawImage(img, 0, 0);
+          // Calculate the new dimensions while maintaining the original aspect ratio
+          let maxWidth = 500, maxHeight = 500
+          let newWidth = img.width;
+          let newHeight = img.height;
+          
+          if (newWidth > maxWidth) {
+            newHeight *= maxWidth / newWidth;
+            newWidth = maxWidth;
+          }
+          
+          if (newHeight > maxHeight) {
+            newWidth *= maxHeight / newHeight;
+            newHeight = maxHeight;
+          }
+          canvas.width = newWidth;
+          canvas.height = newHeight;
+          ctx.drawImage(img, 0, 0, newWidth, newHeight);
           // Convert the image to PNG format by drawing it onto a canvas and then converting the canvas to data URL
           const dataUrl = canvas.toDataURL('image/png');
           const pngImage = dataURLToBlob(dataUrl);
