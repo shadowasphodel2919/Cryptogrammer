@@ -40,7 +40,7 @@ export const Algorithms = () => {
             </a>
             <a href="/algorithms/affine">
                 <div className="card">
-                    <p>Affine Cipher</p>
+                    <p>Affine Cipher(Underway)</p>
                 </div>
             </a>
 
