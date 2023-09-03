@@ -13,6 +13,7 @@ import { Railfence } from './Algos/Railfence';
 import { Beaufort } from './Algos/Beaufort';
 import { RSA } from './Algos/RSA';
 import LsbSteganography from './Algos/LsbSteganography';
+import { Affine } from './Algos/Affine';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="algorithms/railfence" element={<Railfence />} />
           <Route path="algorithms/beaufort" element={<Beaufort />} />
           <Route path="algorithms/rsa" element={<RSA />} />
+          <Route path="algorithms/affine" element={<Affine />} />
           <Route path="steganography" element={<LsbSteganography />} />
           </Route>
       </Routes>

@@ -38,6 +38,11 @@ export const Algorithms = () => {
                     <p>RSA Algorithm</p>
                 </div>
             </a>
+            <a href="/algorithms/affine">
+                <div className="card">
+                    <p>Affine Cipher</p>
+                </div>
+            </a>
 
             {/* <Link as={Link} to="atbash">Atbash Cipher</Link> */}
         </section>
