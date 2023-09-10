@@ -47,13 +47,72 @@ export const Affine = () => {
     function changeValid(){
       setInit(true);
     }   
+    function findInvMod(){
+      let i = 1;
+      while(true){
+        if(((26*i)+1)%A === 0){
+          console.log(i+ " " +A);
+          return (26*i+1)/A;
+        }
+        i++;
+      }
+    }
     function encryptMessage(msg)
     {
-      return msg;
+      let length = msg.length, cipher = "";
+      for(let i = 0; i < length; i++){
+        let ch = msg[i];
+        if(ch === ' '){
+          cipher += " ";
+          continue;
+        }
+        else if(ch >= 'A' && ch <= 'Z'){
+          ch = ch.charCodeAt(0)%65;
+          ch = parseInt((((ch*A)%26)+parseInt(B))%26);
+          cipher += String.fromCharCode(ch+65)
+        }
+        else if(ch >= 'a' && ch <= 'z'){
+          ch = ch.charCodeAt(0)%97;
+          ch = parseInt((((ch*A)%26)+parseInt(B))%26);
+          cipher += String.fromCharCode(ch+97)
+        }
+      }
+      return cipher;
     }
     function decryptCipher(cipher)
     {
-      return cipher;
+      let length = cipher.length, msg = "", inv = findInvMod();
+      console.log(inv);
+      for(let i = 0; i < length; i++){
+        let ch = cipher[i];
+        if(ch === ' '){
+          msg += " ";
+          continue;
+        }
+        else if(ch >= 'A' && ch <= 'Z'){
+          ch = ch.charCodeAt(0)%65;
+          if(ch-B>=0){
+            ch = (((ch - B)%26)*inv)%26;
+          }
+          else{
+            ch = 26-(ch-B);
+            ch = (((ch - B)%26)*inv)%26;
+          }
+          msg += String.fromCharCode(ch+65);
+        }
+        else if(ch >= 'a' && ch <= 'z'){
+          ch = ch.charCodeAt(0)%97;
+          if(ch-B>=0){
+            ch = (((ch - B)%26)*inv)%26;
+          }
+          else{
+            ch = 26-(ch-B);
+            ch = (((ch - B)%26)*inv)%26;
+          }
+          msg += String.fromCharCode(ch+97);
+        }
+      }
+      return msg;
     }
     return (<ThemeProvider theme={theme}>
         <CssBaseline />
