@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -44,14 +44,29 @@ export const Affine = () => {
       setMessage(m1);
     }
 
+    function gcd(a,b){
+      if(a===0 || b===0)return 0;
+      if(a===b)return a;
+      if(a>b)return gcd(a-b, b);
+      return gcd(a, b-a);
+    }
+
+    function checkCoprime(a, b){
+      if(gcd(a,b)===1)return true;
+      return false;
+    }
+
     function changeValid(){
+      if(checkCoprime(A,B))
       setInit(true);
+      else
+      alert("The numbers should be co-prime")
     }   
     function findInvMod(){
       let i = 1;
       while(true){
         if(((26*i)+1)%A === 0){
-          console.log(i+ " " +A);
+          // console.log(i+ " " +A);
           return (26*i+1)/A;
         }
         i++;
@@ -82,7 +97,7 @@ export const Affine = () => {
     function decryptCipher(cipher)
     {
       let length = cipher.length, msg = "", inv = findInvMod();
-      console.log(inv);
+      // console.log(inv);
       for(let i = 0; i < length; i++){
         let ch = cipher[i];
         if(ch === ' '){
