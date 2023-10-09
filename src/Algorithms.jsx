@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 export const Algorithms = () => {
     return (
         <section className="algos">
@@ -43,8 +41,6 @@ export const Algorithms = () => {
                     <p>Affine Cipher</p>
                 </div>
             </a>
-
-            {/* <Link as={Link} to="atbash">Atbash Cipher</Link> */}
         </section>
         );
 }

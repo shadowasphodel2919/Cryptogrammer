@@ -97,7 +97,6 @@ export const Affine = () => {
     function decryptCipher(cipher)
     {
       let length = cipher.length, msg = "", inv = findInvMod();
-      // console.log(inv);
       for(let i = 0; i < length; i++){
         let ch = cipher[i];
         if(ch === ' '){
