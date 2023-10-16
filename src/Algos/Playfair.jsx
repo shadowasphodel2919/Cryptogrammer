@@ -1,6 +1,27 @@
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import TextField from '@mui/material/TextField';
+import CssBaseline from '@mui/material/CssBaseline';
+import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+const theme = createTheme({
+    palette: {
+      mode: 'dark',
+    },
+  });
+const Container = styled('div')({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100vh',
+    gap: 10,
+  });
+const Main = styled('div')({
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+});
 
 export const Playfair = () => {
     const [message, setMessage] = useState("");
@@ -8,20 +29,33 @@ export const Playfair = () => {
     const [playSq, setPlaySq] = useState([]);
     const [cipher, setCipher] = useState("");
 
-    useEffect(() => {
-      encode()
-    }, [message, key])
+    const ALPHA_REGEX = /^[a-zA-Z]+$/;
 
-    const encode = () => {
-        buildPlayfairSquare();
-        formatMessage();
-        console.log(message);
-        console.log(playSq);
-        var msg = message.toUpperCase();
+    function onMessageChange(txt){
+        let value = txt.toUpperCase();
+        setMessage(value);
+        let c1 = encode(value);
+        setCipher(c1);
+    }
+    function onKeyChange(txt){
+        let value = txt.toUpperCase();
+        buildPlayfairSquare(key);
+        setKey(value);
+    }
+    function onCipherChange(txt){
+        let value = txt.toUpperCase();
+        setCipher(value);
+        let c1 = encode(value);
+        setMessage(c1);
+    }
+
+    const encode = (msg) => {
+        let playSq = buildPlayfairSquare(key);
+        msg = formatMessage(msg);
         let indexA = new Array(2);
         let indexB = new Array(2);
         let res='';
-        for(let i = 0; i < message.length-1; i+=2){
+        for(let i = 0; i < msg.length-1; i+=2){
             let a = msg.charAt(i);
             let b = msg.charAt(i+1);
             //search
@@ -53,12 +87,11 @@ export const Playfair = () => {
                 res += playSq[indexB[0]][indexA[1]];
             }
         }
-        setCipher(res);
+        return res;
     }
     
 
-    const formatMessage = () => {
-        var text = message.toUpperCase()
+    const formatMessage = (text) => {
         var newText = "";
         let i = 0;
         for(i = 0; i < text.length-1; i += 2){
@@ -66,19 +99,20 @@ export const Playfair = () => {
                 newText += text[i]+text[i+1];
             }
             else{
-                newText += text[i]+'x'+text[i+1];//using x coz no realwords use double x's can change later
+                newText += text[i]+'X'+text[i+1];//using x coz no realwords use double x's can change later
             }
         }
         if(i<text.length)newText += text[i++];
         if(newText.length%2!==0){
             newText = newText.concat('X')
         }
-        setMessage(newText);
+        console.log(newText);
+        return newText;
+        // setMessage(newText);
     }
 
-    const buildPlayfairSquare = () => {
+    const buildPlayfairSquare = (keyGen) => {
         let square = new Array(5);
-        var keyGen = key.toUpperCase();
         for(let i = 0; i < 5; i++){
             square[i] = new Array(5);
         }
@@ -114,19 +148,49 @@ export const Playfair = () => {
             if(i === 5)break;
         }
         setPlaySq(square);
+        return square;
     }
-    return (<Form>
-        <Form.Group className='mb-3' controlId='message'>
-            <Form.Label>Plain Text</Form.Label>
-            <Form.Control style={{textTransform: 'uppercase'}} type='text'  onChange={(e)=>setMessage(e.target.value)} placeholder='Enter Message' />
-        </Form.Group>
-        <Form.Group className='mb-3' controlId='key'>
-            <Form.Label>Key</Form.Label>
-            <Form.Control style={{textTransform: 'uppercase'}} type='text' onChange={(e)=>setKey(e.target.value)} placeholder='Enter the keyword' />
-        </Form.Group>
-        <Form.Group className='mb-3' controlId='cipher'>
-            <Form.Label>Cipher Text</Form.Label>
-            <Form.Control type='text' value={cipher} placeholder='Cipher Text' readOnly />
-        </Form.Group>
-    </Form>);
+
+    return (
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Container>
+                <h1>Playfair Cipher</h1>
+                <Main>
+                    <TextField
+                        placeholder="Enter Message"
+                        label="Message"
+                        value={message}
+                        type="text"
+                        onChange={(e)=>{
+                            if(e.target.value !== "" && !ALPHA_REGEX.test(e.target.value))
+                            return;
+                            onMessageChange(e.target.value)
+                        }}
+                    />
+                    <TextField
+                        placeholder="Enter Key"
+                        label="Secret Key"
+                        value={key}
+                        type="text"
+                        onChange={(e)=>{
+                            if(e.target.value !== "" && !ALPHA_REGEX.test(e.target.value))
+                            return;
+                            onKeyChange(e.target.value)
+                        }}
+                    />
+                    <TextField
+                        placeholder="Enter Cipher"
+                        label="Cipher"
+                        value={cipher}
+                        onChange={(e)=>{
+                            if(e.target.value !== "" && !ALPHA_REGEX.test(e.target.value))
+                            return;
+                            onCipherChange(e.target.value)
+                        }}
+                    />
+                </Main>
+            </Container>
+        </ThemeProvider>
+    );
 }
