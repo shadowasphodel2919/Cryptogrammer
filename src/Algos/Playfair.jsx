@@ -108,7 +108,6 @@ export const Playfair = () => {
         }
         console.log(newText);
         return newText;
-        // setMessage(newText);
     }
 
     const buildPlayfairSquare = (keyGen) => {
@@ -150,6 +149,25 @@ export const Playfair = () => {
         setPlaySq(square);
         return square;
     }
+    function hasRepeats (str) {
+        return /(.).*\1/.test(str);
+    }
+
+    const PlayfairSquare = () => {
+        return (
+            <table>
+                <tbody>
+                    {playSq.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                            {row.map((cell, columnIndex) => (
+                                <td key={columnIndex}>{cell}</td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
+    };
 
     return (
         <ThemeProvider theme={theme}>
@@ -173,12 +191,15 @@ export const Playfair = () => {
                         label="Secret Key"
                         value={key}
                         type="text"
+                        error={hasRepeats(key)}
+                        helperText={hasRepeats(key) ? 'No repeated characters!' : ' '}
                         onChange={(e)=>{
                             if(e.target.value !== "" && !ALPHA_REGEX.test(e.target.value))
-                            return;
+                                return;
                             onKeyChange(e.target.value)
                         }}
                     />
+                    <PlayfairSquare />
                     <TextField
                         placeholder="Enter Cipher"
                         label="Cipher"
