@@ -1,6 +1,8 @@
-import Button from "react-bootstrap/Button";
+// import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useState, useEffect } from "react";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 
 const PolybiusCipher = () => {
   const [plaintext, setPlaintext] = useState("");
@@ -58,7 +60,7 @@ const PolybiusCipher = () => {
       boxShadow: "0 0px 5px #cccccc",
       width: "500px",
       height: "250px",
-      margin: "20px",
+      // margin: "20px",
       textAlign: "center",
     },
     h2: {
@@ -66,12 +68,38 @@ const PolybiusCipher = () => {
     },
     p: {
       color: "#555",
-      margin: "15px 0",
+      // margin: "15px 0",
     },
+    main_container: {
+      display: "flex",
+      justifyContent:'center', 
+      alignItems:'center',
+      marginTop: "-40px",
+      flexDirection: "column",
+      padding:'20px',
+    },
+    sub_container: {
+      display: "flex",
+      flexDirection: "column",
+      height: "250px",
+      justifyContent: "space-evenly",
+      width: "800px",
+      padding: "20px",
+    },
+  };
+  const inputColor = {
+    color: "white", // Change 'blue' to the desired color
+  };
+  const outlineColor = {
+    borderColor: "white", // Change 'red' to the desired color
   };
 
   if (window.matchMedia("(max-width: 768px)").matches) {
     styles.container.height = "300px";
+    styles.main_container.flexDirection = "column";
+    styles.sub_container.width = "100%";
+    styles.sub_container.marginTop = "30px";
+    styles.container.width = "100%";
   }
 
   return (
@@ -96,7 +124,59 @@ const PolybiusCipher = () => {
 
     <>
       <h2>Polybius Cipher</h2>
-      <Form>
+
+      <div style={styles.main_container}>
+        <div style={styles.sub_container}>
+          <TextField
+            label="Enter Message"
+            variant="outlined"
+            id="filled-basic"
+            type="text"
+            onChange={(e) => setPlaintext(e.target.value)}
+            placeholder="Enter Message"
+            color="warning"
+            focused
+            InputProps={{
+              style: {
+                ...inputColor,
+                notchedOutline: outlineColor,
+              },
+            }}
+          />
+
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={(e) => encodeText(e)}
+            size="medium"
+          >
+            Submit
+          </Button>
+          <TextField
+            label="Encrypted Text"
+            variant="outlined"
+            type="text"
+            value={cipherText}
+            readOnly
+            color="success"
+            focused
+            InputProps={{
+              style: inputColor,
+            }}
+          />
+        </div>
+        <div style={styles.container}>
+          <h2 style={styles.h2}>Polybius Square Cipher</h2>
+          <p style={styles.p}>
+            The Polybius Square Cipher is a way to encode text using a grid
+            where each letter of the alphabet is represented by a pair of
+            numbers. For example, 'A' is '11,' 'B' is '12,' and so on. It's a
+            simple and historical way to keep messages secret.
+          </p>
+        </div>
+      </div>
+
+      {/* <Form>
         <Form.Group className="mb-3" controlId="message">
           <Form.Label>Plain Text</Form.Label>
           <Form.Control
@@ -105,10 +185,6 @@ const PolybiusCipher = () => {
             placeholder="Enter Message"
           />
         </Form.Group>
-        {/* <Form.Group className='mb-3' controlId='key'>
-              <Form.Label>Key</Form.Label>
-              <Form.Control type='number' onChange={(e)=>setKey(e.target.value)} placeholder='Enter the key/rows' />
-          </Form.Group> */}
         <Button variant="primary" type="submit" onClick={(e) => encodeText(e)}>
           Submit
         </Button>
@@ -121,25 +197,17 @@ const PolybiusCipher = () => {
             readOnly
           />
         </Form.Group>
-      </Form>
+      </Form> */}
 
-      <div
+      {/* <div
         style={{
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <div style={styles.container}>
-          <h2 style={styles.h2}>Polybius Square Cipher</h2>
-          <p style={styles.p}>
-            The Polybius Square Cipher is a way to encode text using a grid
-            where each letter of the alphabet is represented by a pair of
-            numbers. For example, 'A' is '11,' 'B' is '12,' and so on. It's a
-            simple and historical way to keep messages secret.
-          </p>
-        </div>
-      </div>
+        
+      </div> */}
       {/* <Table data={table} /> */}
     </>
   );
