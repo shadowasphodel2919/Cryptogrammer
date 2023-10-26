@@ -26,6 +26,11 @@ export const Algorithms = () => {
                     <p>Railfence Cipher</p>
                 </div>
             </a>
+            <a href="/algorithms/polybiusCipher">
+                <div className="card">
+                    <p>Polybius Cipher</p>
+                </div>
+            </a>
             <a href="/algorithms/beaufort">
                 <div className="card">
                     <p>Beaufort Cipher</p>

@@ -14,6 +14,7 @@ import { Beaufort } from './Algos/Beaufort';
 import { RSA } from './Algos/RSA';
 import LsbSteganography from './Algos/LsbSteganography';
 import { Affine } from './Algos/Affine';
+import PolybiusCipher from './Algos/PolybiusCipher';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           <Route path="algorithms/rsa" element={<RSA />} />
           <Route path="algorithms/affine" element={<Affine />} />
           <Route path="steganography" element={<LsbSteganography />} />
+          <Route path="algorithms/polybiusCipher" element={<PolybiusCipher />} />
           </Route>
       </Routes>
     </BrowserRouter>
