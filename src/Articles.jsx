@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 export const Articles = () => {
     fetch('https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@stupidsherlock')
     .then(res=>res.json())
@@ -19,10 +18,14 @@ export const Articles = () => {
         }
         let output = '';
         posts.forEach((item)=> {
+            let description = item.description;
+            let thumbnailLinkRegex = /<img.*?src=["'](.*?)["']/;
+            let match = description.match(thumbnailLinkRegex);
+            let thumbnailLink = match ? match[1] : null;
             output += `
                 <div class="item" onClick="window.location.href = '${item.link}'">
                     <div class="thumb">
-                        <img src="${item.thumbnail}" class="blog-topImg"></img>
+                        <img src="${thumbnailLink}" class="blog-topImg"></img>
                     </div>
                     <div class="text">
                         <h2 class="blog-title">${shortenText(item.title,0,30)+'...'}</h2>
