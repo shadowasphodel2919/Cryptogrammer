@@ -14,7 +14,7 @@ import { Beaufort } from './Algos/Beaufort';
 import { RSA } from './Algos/RSA';
 import LsbSteganography from './Algos/LsbSteganography';
 import { Affine } from './Algos/Affine';
-import PolybiusCipher from './Algos/PolybiusCipher';
+import PolybiusCipher from './Algos/Polybius.jsx';
 
 function App() {
   return (
