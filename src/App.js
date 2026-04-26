@@ -3,17 +3,18 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "./Components/Navbar.js";
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Home } from './Components/Home';
 import { Articles } from './Articles';
 import { Algorithms } from './Algorithms';
 import { Caeser } from './Algos/Caeser';
 import { Vignere } from './Algos/Vignere';
-import { Playfair } from './Algos/Playfair';
+import Playfair from './Algos/Playfair';
 import Atbash from './Algos/Atbash';
 import { Railfence } from './Algos/Railfence';
-import { Beaufort } from './Algos/Beaufort';
-import { RSA } from './Algos/RSA';
+import Beaufort from './Algos/Beaufort';
+import RSA from './Algos/RSA';
 import LsbSteganography from './Algos/LsbSteganography';
-import { Affine } from './Algos/Affine';
+import Affine from './Algos/Affine';
 import PolybiusCipher from './Algos/Polybius.jsx';
 
 function App() {
@@ -22,7 +23,7 @@ function App() {
       <BrowserRouter>
       <Routes>
         <Route path="/" element={<Header />}>
-          <Route index element={<Articles />} />
+          <Route index element={<Home />} />
           <Route path="articles" element={<Articles />} />
           <Route path="algorithms" element={<Algorithms />} />
           <Route path="algorithms/caeser"element={<Caeser/>} />

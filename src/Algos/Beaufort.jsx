@@ -1,97 +1,100 @@
-import { useState } from "react";
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
-const theme = createTheme({
-    palette: {
-      mode: 'dark',
-    },
-  });
-const Container = styled('div')({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    gap: 10,
-  });
+import React, { useState } from "react";
+import "./CipherPage.css";
+
 export const Beaufort = () => {
-    const [message, setMessage] = useState("");
-    const [key, setKey] = useState("");
-    const [cipher, setCipher] = useState("");
+  const [text, setText] = useState("");
+  const [keyword, setKeyword] = useState("KEY");
+
+  const processText = (msg, keyStr) => {
+    if (!keyStr) return msg;
+    let cipherText = '';
+    let keyUpper = keyStr.toUpperCase().replace(/[^A-Z]/g, '');
+    if (!keyUpper) return msg;
     
-    const buildCipher = (e) => {
-        e.preventDefault();
-        let cipherText = '';
-        let genKey = key;
-        for(let i = 0; ; i++){
-            if(message.length == i)
-            i = 0;
-            if(genKey.length == message.length)break;
-            genKey+=(genKey.charAt(i));
-        }
-        console.log(genKey);
-        setKey(genKey)
-        for(let i = 0; i < message.length; i++){
-            let mCode = message.charCodeAt(i);
-            let kCode = genKey.charCodeAt(i);
-            if(mCode < 65 || (mCode > 90 && mCode < 97) || mCode > 122){
-                cipherText += String.fromCharCode(mCode);
-                continue;
-            }
-            if(kCode>=65 && kCode<=90)
-                kCode = (kCode-65)%65
-            if(kCode>=97 && kCode<=122)
-                kCode = (kCode-97)%97
-            if(mCode>=65 && mCode<=90){
-                mCode = (mCode-65)%65
-                mCode = (kCode-mCode)%26
-                if(mCode<0)mCode = 26+mCode;
-                mCode = mCode+65
-                console.log(kCode + " " + mCode);
-              }
-            if(mCode>=97 && kCode<=122){
-              mCode = (mCode-97)%97
-              mCode = (kCode-mCode)%26
-              if(mCode<0)mCode = 26+mCode;
-              mCode = mCode+97
-              console.log(kCode + " " + mCode);
-            }
-            let cipherChar = String.fromCharCode(mCode);
-            cipherText += cipherChar;
-        }
-        setCipher(cipherText);
+    let keyIndex = 0;
+    for (let i = 0; i < msg.length; i++) {
+      let asciiCode = msg.charCodeAt(i);
+      if (asciiCode >= 65 && asciiCode <= 90) {
+        let kCode = keyUpper.charCodeAt(keyIndex % keyUpper.length) - 65;
+        let mCode = asciiCode - 65;
+        let cCode = (kCode - mCode + 26) % 26;
+        cipherText += String.fromCharCode(cCode + 65);
+        keyIndex++;
+      } else if (asciiCode >= 97 && asciiCode <= 122) {
+        let kCode = keyUpper.charCodeAt(keyIndex % keyUpper.length) - 65;
+        let mCode = asciiCode - 97;
+        let cCode = (kCode - mCode + 26) % 26;
+        cipherText += String.fromCharCode(cCode + 97);
+        keyIndex++;
+      } else {
+        cipherText += String.fromCharCode(asciiCode);
+      }
     }
-    return (<ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Container>
-        <TextField
-          required
-          id="outlined-required"
-          label="Plain Text"
-          value={message}
-          onChange={(e)=>setMessage(e.target.value)}
-        />
-        <TextField
-          required
-          id="outlined-required"
-          label="Key"
-          value={key}
-          onChange={(e)=>setKey(e.target.value)}
-        />
-        <Button type="submit" variant="contained" color="primary" onClick={(e)=>buildCipher(e)}>
-          Submit
-        </Button>
-        {cipher && 
-        <TextField
-          id="outlined"
-          label="Cipher Text"
-          value={cipher}
-          InputProps={{
-            readOnly: true,
-          }}
-        />}
-        </Container>
-    </ThemeProvider>);
+    return cipherText;
+  }
+
+  // Beaufort is symmetric, so encoding and decoding are the exact same operation!
+  const processedText = processText(text, keyword);
+
+  return (
+    <div className="cipher-container">
+      <div className="cipher-header">
+        <h1>Beaufort Cipher</h1>
+        
+        <div className="cipher-definition">
+          <h3>What is it?</h3>
+          <p>
+            The Beaufort cipher, created by Sir Francis Beaufort, is a substitution cipher similar to 
+            the Vigenère cipher, with a slightly modified enciphering mechanism and tableau. 
+            Its most famous application was in the rotor-based Hagelin M-209 cipher machine. 
+            Unlike Vigenère, the Beaufort cipher is reciprocal (symmetric), meaning the encryption 
+            and decryption algorithms are exactly the same.
+          </p>
+        </div>
+
+        <div className="cipher-example">
+          <div className="cipher-example-title">Example (Keyword = KEY)</div>
+          <div>Plaintext:  HELLO WORLD</div>
+          <div>Ciphertext: DANVB YEBXH</div>
+        </div>
+      </div>
+
+      <div className="cipher-sandbox">
+        <div className="sandbox-title">Interactive Sandbox</div>
+        
+        <div className="input-group">
+          <label>Keyword</label>
+          <input 
+            type="text" 
+            value={keyword} 
+            onChange={(e) => setKeyword(e.target.value.toUpperCase())} 
+            placeholder="Enter keyword (A-Z)"
+          />
+        </div>
+
+        <div className="input-row">
+          <div className="input-group">
+            <label>Input Text</label>
+            <textarea 
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Type message here to encode/decode..."
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Output Text</label>
+            <textarea 
+              value={processedText}
+              readOnly
+              placeholder="Result will appear here..."
+              style={{ borderColor: 'var(--accent-color)' }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
+
+export default Beaufort;

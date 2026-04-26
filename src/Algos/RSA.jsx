@@ -1,362 +1,231 @@
-import { useState, useEffect } from "react";
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import React, { useState, useEffect } from "react";
 import bigInt from "big-integer";
-const theme = createTheme({
-    palette: {
-      mode: 'dark',
-    },
-  });
-const Container = styled('div')({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    gap: 10,
-  });
-const Details = styled('div')({
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-  });
-const Main = styled('div')({
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-  });
+import "./CipherPage.css";
+
 export const RSA = () => {
-    const [p, setP] = useState(0)
-    const [q, setQ] = useState(0)
-    const [n, setn] = useState(0)
-    const [cp, setCp] = useState(0)
-    const [d, setd] = useState(0)
-    const [tf, setTf] = useState(0)
-    const [message, setMessage] = useState("")
-    const [cipher, setCipher] = useState("")
-    const [validE, setValidE] = useState([])
-    const [validPQ, setValidPQ] = useState(false)
-    const [validD, setValidD] = useState(false)
-    const [init, setInit] = useState(false)
-    const [decode, setDecode] = useState(false)
-    const [codedMsg, setCodedMsg] = useState("")
-    const [decodedMsg, setDecodedMsg] = useState("")
-    const [num, setNum] = useState(0)
-    const [key, setKey] = useState(0);
-    const [err1, setErr1] = useState("")
-    const [err2, setErr2] = useState("")
-    useEffect(() => {
-      if (tf > 0) {
-        setValidE(findE(tf));
-      }
-    }, [tf]);
-    useEffect(() => {
-      setCipher(rsaEncode(message,cp,n).join(' '));
-    }, [message])
-    function gcd(a, b) {
-      if (b === 0) {
-        return a;
+  const [p, setP] = useState("61");
+  const [q, setQ] = useState("53");
+  const [n, setN] = useState("");
+  const [phi, setPhi] = useState("");
+  const [eVal, setEVal] = useState("17");
+  const [d, setD] = useState("");
+  
+  const [plaintext, setPlaintext] = useState("");
+  const [encodedText, setEncodedText] = useState("");
+  
+  const [ciphertext, setCiphertext] = useState("");
+  const [decodedText, setDecodedText] = useState("");
+
+  const [error, setError] = useState("");
+
+  const isPrime = (num) => {
+    let n = parseInt(num);
+    if (isNaN(n) || n <= 1) return false;
+    if (n <= 3) return true;
+    if (n % 2 === 0 || n % 3 === 0) return false;
+    for (let i = 5; i * i <= n; i += 6) {
+      if (n % i === 0 || n % (i + 2) === 0) return false;
+    }
+    return true;
+  };
+
+  const gcd = (a, b) => {
+    if (b === 0) return a;
+    return gcd(b, a % b);
+  };
+
+  const modInverse = (a, m) => {
+    let m0 = m;
+    let y = 0;
+    let x = 1;
+    if (m === 1) return 0;
+    while (a > 1) {
+      let q = Math.floor(a / m);
+      let t = m;
+      m = a % m;
+      a = t;
+      t = y;
+      y = x - q * y;
+      x = t;
+    }
+    if (x < 0) x += m0;
+    return x;
+  };
+
+  useEffect(() => {
+    if (p && q) {
+      if (!isPrime(p) || !isPrime(q)) {
+        setError("Both P and Q must be prime numbers.");
+        setN(""); setPhi(""); setD("");
+        return;
       }
       
-      return gcd(b, a % b);
-    }
-    function findE(n) {
-      const coprimes = [];
+      let pInt = parseInt(p);
+      let qInt = parseInt(q);
       
-      for (let i = 1; i <= n; i++) {
-        if (gcd(n, i) === 1) {
-          coprimes.push(i);
-        }
+      if (pInt === qInt) {
+        setError("P and Q must be different prime numbers.");
+        return;
       }
-      return coprimes;
-    }
-    function isPrime(n) {
-        if (n <= 1) {
-          return false;
-        }
-        if (n <= 3) {
-          return true;
-        }
-        if (n % 2 === 0 || n % 3 === 0) {
-          return false;
-        }
+
+      setError("");
+      let calcN = pInt * qInt;
+      let calcPhi = (pInt - 1) * (qInt - 1);
       
-        for (let i = 5; i * i <= n; i += 6) {
-          if (n % i === 0 || n % (i + 2) === 0) {
-            return false;
-          }
-        }      
-        return true;
-    }
-    const step1 = (e) => {
-      e.preventDefault();
-        if(isPrime(p) && isPrime(q)){
-            setTf((p-1)*(q-1))
-            setn(p*q)
-            setValidPQ(true)
-            console.log("Set");
-        }
-    }
-    function modInverse(a, m) {
-      let m0 = m;
-      let y = 0;
-      let x = 1;
-    
-      if (m === 1) return 0;
-    
-      while (a > 1) {
-        let q = Math.floor(a / m);
-        let t = m;
-    
-        m = a % m;
-        a = t;
-        t = y;
-    
-        y = x - q * y;
-        x = t;
+      setN(calcN.toString());
+      setPhi(calcPhi.toString());
+
+      let eInt = parseInt(eVal);
+      if (!isNaN(eInt) && gcd(eInt, calcPhi) === 1 && eInt > 1 && eInt < calcPhi) {
+        setD(modInverse(eInt, calcPhi).toString());
+      } else {
+        setD("Invalid 'e'");
       }
+    }
+  }, [p, q, eVal]);
+
+  const handleEncrypt = (text) => {
+    setPlaintext(text);
+    if (!text || !n || !eVal || d === "Invalid 'e'") {
+      setEncodedText("");
+      return;
+    }
     
-      if (x < 0) x += m0;
-    
-      return x;
+    let encodedNum = [];
+    for (let i = 0; i < text.length; i++) {
+      let charCode = text.charCodeAt(i);
+      let encodedChar = bigInt(charCode).pow(parseInt(eVal)).mod(parseInt(n));
+      encodedNum.push(encodedChar.toString(10));
     }
-    const step2 = (e) => {
-      setd(modInverse(cp,tf))
-      setValidD(true)
-      setInit(true)
+    setEncodedText(encodedNum.join(" "));
+  };
+
+  const handleDecrypt = (text) => {
+    setCiphertext(text);
+    if (!text || !n || !d || d === "Invalid 'e'") {
+      setDecodedText("");
+      return;
     }
-    function rsaEncode(message, e, n) {
-      let messageNum = [];
-      for (let i = 0; i < message.length; i++) {
-        messageNum.push(message.charCodeAt(i));
-      }
-      let encodedNum = [];
-      for (let i = 0; i < messageNum.length; i++) {
-        let char = messageNum[i];
-        let encodedChar = bigInt(char).pow(e).mod(n);
-        encodedNum.push(encodedChar.toString(10));
-      }
-      return encodedNum;
-    }
-    function rsaDecode(str, d, n){
-      let coded = str.split(" ")
-      let decodedNum = [];
-      for (let i = 0; i < coded.length; i++) {
-        let char = bigInt(coded[i]).pow(d).mod(n);
-        decodedNum.push(char);
-      }
+
+    try {
+      let coded = text.trim().split(/\s+/);
       let decodedMessage = '';
-      for (let i = 0; i < decodedNum.length; i++) {
-        let charCode = decodedNum[i];
-        decodedMessage += String.fromCharCode(charCode);
+      for (let i = 0; i < coded.length; i++) {
+        if (!coded[i]) continue;
+        let charCode = bigInt(coded[i]).pow(parseInt(d)).mod(parseInt(n));
+        decodedMessage += String.fromCharCode(charCode.toJSNumber());
       }
-      return decodedMessage;
+      setDecodedText(decodedMessage);
+    } catch (err) {
+      setDecodedText("Error decoding. Ensure input is space-separated numbers.");
     }
-    function changePanel(){
-      setDecode(true)
-    }
-    const decodeMessage = () => {
-      setDecodedMsg(rsaDecode(codedMsg, key, num))
-    }
-    const handleP = (val) => {
-      setP(val)
-      if(val !== '' && !isPrime(val)){
-        setErr1("Please enter a prime number")
-      }else{
-        setErr1('')
-      }
-    }
-    const handleQ = (val) => {
-      setQ(val)
-      if(val !== '' && !isPrime(val)){
-        setErr2("Please enter a prime number")
-      }else{
-        setErr2('')
-      }
-    }
-    return (<ThemeProvider theme={theme}>
-        <CssBaseline />
-        {decode?<>
-          <Container>
-          <Details>
-          <TextField
-            id="outlined"
-            label="d"
-            value={key}
-            onChange={(e)=>setKey(e.target.value)}
-          />
-          <TextField
-            id="outlined"
-            label="n"
-            value={num}
-            onChange={(e)=>setNum(e.target.value)}
-          />
-          <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={(e)=>decodeMessage(e)}>Decode</Button>
-          </Details>
-          <Main>
-            <TextField
-              placeholder="Enter Encoded Text"
-              multiline
-              rows={10}
-              style={{width: 400}}
-              onChange={(e)=>setCodedMsg(e.target.value)}
+  };
+
+  return (
+    <div className="cipher-container">
+      <div className="cipher-header">
+        <h1>RSA Algorithm</h1>
+        
+        <div className="cipher-definition">
+          <h3>What is it?</h3>
+          <p>
+            RSA (Rivest–Shamir–Adleman) is a public-key cryptosystem that is widely used for secure data transmission. 
+            In a public-key cryptosystem, the encryption key is public and distinct from the decryption key, which is kept secret (private). 
+            This asymmetry is based on the practical difficulty of factoring the product of two large prime numbers, the "factoring problem".
+          </p>
+        </div>
+
+        <div className="cipher-example">
+          <div className="cipher-example-title">Key Generation Steps</div>
+          <div>1. Choose two distinct prime numbers, <b>p</b> and <b>q</b>.</div>
+          <div>2. Compute <b>n = p × q</b>.</div>
+          <div>3. Compute the totient <b>φ(n) = (p − 1) × (q − 1)</b>.</div>
+          <div>4. Choose an integer <b>e</b> such that 1 &lt; e &lt; φ(n) and e is coprime to φ(n).</div>
+          <div>5. Determine <b>d</b> as <i>d ≡ e⁻¹ (mod φ(n))</i>.</div>
+        </div>
+      </div>
+
+      <div className="cipher-sandbox">
+        <div className="sandbox-title">RSA Key Generation</div>
+        
+        <div className="input-row" style={{ flexWrap: 'wrap' }}>
+          <div className="input-group" style={{ flex: '1 1 100px' }}>
+            <label>Prime P</label>
+            <input type="number" value={p} onChange={(e) => setP(e.target.value)} />
+          </div>
+          <div className="input-group" style={{ flex: '1 1 100px' }}>
+            <label>Prime Q</label>
+            <input type="number" value={q} onChange={(e) => setQ(e.target.value)} />
+          </div>
+          <div className="input-group" style={{ flex: '1 1 100px' }}>
+            <label>Public Exponent (e)</label>
+            <input type="number" value={eVal} onChange={(e) => setEVal(e.target.value)} />
+          </div>
+        </div>
+        
+        {error && <div style={{ color: 'var(--color-error)', textAlign: 'center' }}>{error}</div>}
+
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap', marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.3)', borderRadius: '8px' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Modulus (n)</div>
+            <div style={{ color: 'var(--accent-color)', fontSize: '1.2rem', fontWeight: 'bold' }}>{n || '-'}</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Totient φ(n)</div>
+            <div style={{ color: 'var(--accent-color)', fontSize: '1.2rem', fontWeight: 'bold' }}>{phi || '-'}</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Private Key (d)</div>
+            <div style={{ color: 'var(--accent-color)', fontSize: '1.2rem', fontWeight: 'bold' }}>{d || '-'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="cipher-sandbox" style={{ marginTop: '-1rem' }}>
+        <div className="sandbox-title">Encryption (Uses Public Key: e, n)</div>
+        <div className="input-row">
+          <div className="input-group">
+            <label>Plaintext</label>
+            <textarea 
+              value={plaintext}
+              onChange={(e) => handleEncrypt(e.target.value)}
+              placeholder="Type message here to encrypt..."
             />
-            <TextField
-              placeholder="Decoded Text"
-              multiline
-              value={decodedMsg}
-              rows={10}
-              style={{width: 400}}
+          </div>
+          <div className="input-group">
+            <label>Ciphertext (Space-separated numbers)</label>
+            <textarea 
+              value={encodedText}
+              readOnly
+              style={{ borderColor: 'var(--accent-color)' }}
             />
-          </Main>
-        </Container>
-        </>:<>
-        {!init ? 
-        <Container>
-        <>
-        <Button variant="contained" color="primary" onClick={(e)=>changePanel()}>Decode Instead</Button>
-        <TextField
-          required
-          id="outlined-required"
-          label="Select P"
-          onChange={(e)=>handleP(e.target.value)}
-          type="number"
-          error={err1 !== ''}
-          helperText={err1}
-        />
-        <TextField
-          required
-          id="outlined-required"
-          label="Select Q"
-          onChange={(e)=>handleQ(e.target.value)}
-          type="number"
-          error={err2 !== ''}
-          helperText={err2}
-        />
-        {!validPQ && <Button type="submit" variant="contained" color="primary" onClick={(e)=>step1(e)}>
-          Calculate n,φ(n)
-        </Button>}
-        </>
-        {validPQ && 
-        <>
-        <TextField
-          id="outlined"
-          label="Totient Function"
-          value={tf}
-          InputProps={{
-            readOnly: true,
-          }}
-        />
-        <TextField
-          id="outlined"
-          label="n"
-          value={n}
-          InputProps={{
-            readOnly: true,
-          }}
-        />
-        <TextField
-          id="outlined"
-          label="Predicted Values for e"
-          value={validE}
-          InputProps={{
-            readOnly: true,
-          }}
-        />
-        <TextField
-          id="outlined"
-          label="Select e"
-          value={cp}
-          onChange={(e)=>setCp(e.target.value)}
-        />
-        {!validD && <Button type="submit" variant="contained" color="primary" onClick={(e)=>step2(e)}>
-          Calculate d
-        </Button>}
-        </>
-        }
-        {validD && 
-          <>
-          <TextField
-            id="outlined"
-            label="d"
-            value={d}
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          </>
-        }
-        </Container>
-        :
-        <Container>
-          <Details>
-          <TextField
-            id="outlined"
-            label="p"
-            value={p}
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          <TextField
-            id="outlined"
-            label="q"
-            value={q}
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          <TextField
-            id="outlined"
-            label="n"
-            value={n}
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          <TextField
-            id="outlined"
-            label="Totient Function"
-            value={tf}
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          <TextField
-            id="outlined"
-            label="e"
-            value={cp}
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-          </Details>
-          <Main>
-            <TextField
-              placeholder="Enter Message"
-              multiline
-              rows={10}
-              style={{width: 400}}
-              onChange={(e)=>setMessage(e.target.value)}
+          </div>
+        </div>
+      </div>
+
+      <div className="cipher-sandbox" style={{ marginTop: '-1rem' }}>
+        <div className="sandbox-title">Decryption (Uses Private Key: d, n)</div>
+        <div className="input-row">
+          <div className="input-group">
+            <label>Ciphertext</label>
+            <textarea 
+              value={ciphertext}
+              onChange={(e) => handleDecrypt(e.target.value)}
+              placeholder="Type space-separated numbers here to decrypt..."
             />
-            <TextField
-              placeholder="Encoded Text"
-              multiline
-              value={cipher}
-              rows={10}
-              style={{width: 400}}
+          </div>
+          <div className="input-group">
+            <label>Decoded Plaintext</label>
+            <textarea 
+              value={decodedText}
+              readOnly
+              style={{ borderColor: 'var(--accent-color)' }}
             />
-          </Main>
-      </Container>}
-      </>}
-    </ThemeProvider>);
-}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default RSA;

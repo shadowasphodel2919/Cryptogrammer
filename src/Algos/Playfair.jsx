@@ -1,217 +1,221 @@
-import { useState } from "react";
-import TextField from '@mui/material/TextField';
-import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
-const theme = createTheme({
-    palette: {
-      mode: 'dark',
-    },
-  });
-const Container = styled('div')({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    gap: 10,
-  });
-const Main = styled('div')({
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-});
+import React, { useState, useEffect } from "react";
+import "./CipherPage.css";
 
-export const Playfair = () => {
-    const [message, setMessage] = useState("");
-    const [key, setKey] = useState("");
-    const [playSq, setPlaySq] = useState([]);
-    const [cipher, setCipher] = useState("");
+const Playfair = () => {
+  const [text, setText] = useState("");
+  const [mode, setMode] = useState("encode");
+  const [key, setKey] = useState("SECRET");
+  const [playSq, setPlaySq] = useState([]);
+  const [error, setError] = useState("");
 
-    const ALPHA_REGEX = /^[a-zA-Z]+$/;
-
-    function onMessageChange(txt){
-        let value = txt.toUpperCase();
-        setMessage(value);
-        let c1 = encode(value);
-        setCipher(c1);
-    }
-    function onKeyChange(txt){
-        let value = txt.toUpperCase();
-        buildPlayfairSquare(key);
-        setKey(value);
-    }
-    function onCipherChange(txt){
-        let value = txt.toUpperCase();
-        setCipher(value);
-        let c1 = encode(value);
-        setMessage(c1);
-    }
-
-    const encode = (msg) => {
-        let playSq = buildPlayfairSquare(key);
-        msg = formatMessage(msg);
-        let indexA = new Array(2);
-        let indexB = new Array(2);
-        let res='';
-        for(let i = 0; i < msg.length-1; i+=2){
-            let a = msg.charAt(i);
-            let b = msg.charAt(i+1);
-            //search
-            if(a === 'J') a = 'I'
-            if(b === 'J') b = 'I'
-            for(let i = 0; i < 5; i++){
-                for(let j = 0; j < 5; j++){
-                    if(playSq[i][j] === a){
-                        indexA[0] = i;
-                        indexA[1] = j;
-                    }
-                    if(playSq[i][j] === b){
-                        indexB[0] = i;
-                        indexB[1] = j;
-                    }
-                }
-            }
-            //search ends
-            if(indexA[0] === indexB[0]){
-                res += playSq[indexA[0]][(indexA[1]+1)%5];
-                res += playSq[indexB[0]][(indexB[1]+1)%5];
-            }
-            else if(indexA[1] === indexB[1]){
-                res += playSq[(indexA[0]+1)%5][indexA[1]];
-                res += playSq[(indexB[0]+1)%5][indexB[1]];
-            }
-            else{
-                res += playSq[indexA[0]][indexB[1]];
-                res += playSq[indexB[0]][indexA[1]];
-            }
-        }
-        return res;
+  const buildPlayfairSquare = (keyGen) => {
+    let keyUpper = keyGen.toUpperCase().replace(/[^A-Z]/g, '').replace(/J/g, 'I');
+    // Remove duplicates
+    let uniqueKey = Array.from(new Set(keyUpper.split(''))).join('');
+    
+    let square = new Array(5);
+    for(let i = 0; i < 5; i++){
+      square[i] = new Array(5);
     }
     
-
-    const formatMessage = (text) => {
-        var newText = "";
-        let i = 0;
-        for(i = 0; i < text.length-1; i += 2){
-            if(text[i]!==text[i+1]){
-                newText += text[i]+text[i+1];
-            }
-            else{
-                newText += text[i]+'X'+text[i+1];//using x coz no realwords use double x's can change later
-            }
-        }
-        if(i<text.length)newText += text[i++];
-        if(newText.length%2!==0){
-            newText = newText.concat('X')
-        }
-        console.log(newText);
-        return newText;
+    let j = 0, i = 0, k = 0;
+    while(k < uniqueKey.length){
+      square[i][j++] = uniqueKey.charAt(k);
+      if(j === 5){
+        j = 0;
+        i++;
+      }
+      k++;
     }
-
-    const buildPlayfairSquare = (keyGen) => {
-        let square = new Array(5);
-        for(let i = 0; i < 5; i++){
-            square[i] = new Array(5);
+    
+    for(let ch = 65; ch <= 90; ch++){
+      let char = String.fromCharCode(ch);
+      if(char === 'J') continue;
+      if(uniqueKey.indexOf(char) === -1){
+        square[i][j++] = char;
+        if(j === 5){
+          j = 0;
+          i++;
         }
-        var j = 0, i = 0, k =0;
-        while(k<keyGen.length){
-            if(keyGen.charAt(k)==='J'){
-                square[i][j++] = 'I'
-            }
-            else{
-                square[i][j++] = (keyGen.charAt(k));
-            }
-            if(j===5){
-                j = 0;
-                i++;
-            }
-            k++;
-        }
-        if(j===5){
-            j = 0; i++;
-        }
-        for(var ch = 65; ch <= 90; ch++){
-            if(String.fromCharCode(ch)==='J')continue;
-            if(keyGen.indexOf(String.fromCharCode(ch))===-1){
-                if(keyGen.indexOf('I')===-1 && String.fromCharCode(ch)==='I' && keyGen.indexOf('J')!==-1){
-                    continue;
-                }
-                square[i][j++] = String.fromCharCode(ch);
-            }
-            if(j===5){
-                j = 0;
-                i++;
-            }
-            if(i === 5)break;
-        }
-        setPlaySq(square);
-        return square;
+        if(i === 5) break;
+      }
     }
-    function hasRepeats (str) {
-        return /(.).*\1/.test(str);
-    }
+    return square;
+  }
 
-    const PlayfairSquare = () => {
-        return (
-            <table>
-                <tbody>
-                    {playSq.map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                            {row.map((cell, columnIndex) => (
-                                <td key={columnIndex}>{cell}</td>
-                            ))}
-                        </tr>
+  useEffect(() => {
+    setPlaySq(buildPlayfairSquare(key));
+    if (/(.).*\1/.test(key)) {
+      setError("Warning: Key has repeated characters. Duplicates are ignored.");
+    } else {
+      setError("");
+    }
+  }, [key]);
+
+  const formatMessage = (msg) => {
+    let newText = "";
+    msg = msg.toUpperCase().replace(/[^A-Z]/g, '').replace(/J/g, 'I');
+    let i = 0;
+    for(i = 0; i < msg.length - 1; i += 2){
+      if(msg[i] !== msg[i+1]){
+        newText += msg[i] + msg[i+1];
+      } else {
+        newText += msg[i] + 'X';
+        i--; // Re-evaluate the second character in the next pair
+      }
+    }
+    if(i < msg.length) newText += msg[i];
+    if(newText.length % 2 !== 0){
+      newText += 'X';
+    }
+    return newText;
+  }
+
+  const processPair = (a, b, square, encodeMode) => {
+    let indexA = [-1, -1], indexB = [-1, -1];
+    for(let i = 0; i < 5; i++){
+      for(let j = 0; j < 5; j++){
+        if(square[i][j] === a) indexA = [i, j];
+        if(square[i][j] === b) indexB = [i, j];
+      }
+    }
+    
+    // Fallback if char not found (shouldn't happen with sanitized input)
+    if (indexA[0] === -1 || indexB[0] === -1) return a + b;
+
+    let shift = encodeMode ? 1 : 4; // Adding 4 is equivalent to subtracting 1 modulo 5
+
+    if(indexA[0] === indexB[0]){
+      // Same row
+      return square[indexA[0]][(indexA[1] + shift) % 5] + square[indexB[0]][(indexB[1] + shift) % 5];
+    } else if(indexA[1] === indexB[1]){
+      // Same column
+      return square[(indexA[0] + shift) % 5][indexA[1]] + square[(indexB[0] + shift) % 5][indexB[1]];
+    } else {
+      // Rectangle
+      return square[indexA[0]][indexB[1]] + square[indexB[0]][indexA[1]];
+    }
+  }
+
+  const encode = (msg, keyStr) => {
+    if (!msg || !keyStr) return msg;
+    let square = buildPlayfairSquare(keyStr);
+    let formattedMsg = formatMessage(msg);
+    let res = '';
+    for(let i = 0; i < formattedMsg.length - 1; i += 2){
+      res += processPair(formattedMsg[i], formattedMsg[i+1], square, true);
+    }
+    return res;
+  }
+
+  const decode = (cpr, keyStr) => {
+    if (!cpr || !keyStr) return cpr;
+    let square = buildPlayfairSquare(keyStr);
+    let formattedCpr = cpr.toUpperCase().replace(/[^A-Z]/g, '');
+    if (formattedCpr.length % 2 !== 0) return cpr; // Invalid ciphertext length
+    
+    let res = '';
+    for(let i = 0; i < formattedCpr.length - 1; i += 2){
+      res += processPair(formattedCpr[i], formattedCpr[i+1], square, false);
+    }
+    return res;
+  }
+
+  const plaintext = mode === "encode" ? text : decode(text, key);
+  const ciphertext = mode === "encode" ? encode(text, key) : text;
+
+  return (
+    <div className="cipher-container">
+      <div className="cipher-header">
+        <h1>Playfair Cipher</h1>
+        
+        <div className="cipher-definition">
+          <h3>What is it?</h3>
+          <p>
+            The Playfair cipher is a manual symmetric encryption technique and was the first literal digraph 
+            substitution cipher. The scheme encrypts pairs of letters (digraphs), instead of single letters 
+            as is the case with simple substitution ciphers like Caesar. It uses a 5x5 grid of letters constructed 
+            using a secret keyword.
+          </p>
+        </div>
+
+        <div className="cipher-example">
+          <div className="cipher-example-title">Example (Key = SECRET)</div>
+          <div>Plaintext:  HELLO WORLD (Formatted to HELXLO WORLD)</div>
+          <div>Ciphertext: CD QY NT VN TI</div>
+        </div>
+      </div>
+
+      <div className="cipher-sandbox">
+        <div className="sandbox-title">Interactive Sandbox</div>
+        
+        <div className="input-group">
+          <label>Secret Key</label>
+          <input 
+            type="text" 
+            value={key} 
+            onChange={(e) => setKey(e.target.value.toUpperCase())}
+            placeholder="Enter key (A-Z)"
+          />
+          {error && <span style={{ color: 'var(--color-warning)', fontSize: '0.8rem', marginTop: '4px' }}>{error}</span>}
+        </div>
+
+        <div className="input-row">
+          <div className="input-group">
+            <label>Plaintext</label>
+            <textarea 
+              value={plaintext}
+              onChange={(e) => {
+                setMode("encode");
+                setText(e.target.value);
+              }}
+              placeholder="Type message here..."
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Ciphertext</label>
+            <textarea 
+              value={ciphertext}
+              onChange={(e) => {
+                setMode("decode");
+                setText(e.target.value);
+              }}
+              placeholder="Or type ciphertext here..."
+            />
+          </div>
+        </div>
+
+        {playSq.length > 0 && (
+          <div style={{ marginTop: '1.5rem', alignSelf: 'center' }}>
+            <div style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontSize: '0.9rem', textTransform: 'uppercase', textAlign: 'center' }}>
+              Playfair Key Square
+            </div>
+            <table style={{ borderCollapse: 'collapse', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', overflow: 'hidden' }}>
+              <tbody>
+                {playSq.map((row, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {row.map((cell, columnIndex) => (
+                      <td key={columnIndex} style={{ 
+                        width: '40px', height: '40px', 
+                        textAlign: 'center', 
+                        border: '1px solid var(--border-color)',
+                        color: 'var(--accent-color)',
+                        fontWeight: 'bold',
+                        fontSize: '1.2rem'
+                      }}>
+                        {cell}
+                      </td>
                     ))}
-                </tbody>
+                  </tr>
+                ))}
+              </tbody>
             </table>
-        );
-    };
-
-    return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Container>
-                <h1>Playfair Cipher</h1>
-                <Main>
-                    <TextField
-                        placeholder="Enter Message"
-                        label="Message"
-                        value={message}
-                        type="text"
-                        onChange={(e)=>{
-                            if(e.target.value !== "" && !ALPHA_REGEX.test(e.target.value))
-                            return;
-                            onMessageChange(e.target.value)
-                        }}
-                    />
-                    <TextField
-                        placeholder="Enter Key"
-                        label="Secret Key"
-                        value={key}
-                        type="text"
-                        error={hasRepeats(key)}
-                        helperText={hasRepeats(key) ? 'No repeated characters!' : ' '}
-                        onChange={(e)=>{
-                            if(e.target.value !== "" && !ALPHA_REGEX.test(e.target.value))
-                                return;
-                            onKeyChange(e.target.value)
-                        }}
-                    />
-                    <PlayfairSquare />
-                    <TextField
-                        placeholder="Enter Cipher"
-                        label="Cipher"
-                        value={cipher}
-                        onChange={(e)=>{
-                            if(e.target.value !== "" && !ALPHA_REGEX.test(e.target.value))
-                            return;
-                            onCipherChange(e.target.value)
-                        }}
-                    />
-                </Main>
-            </Container>
-        </ThemeProvider>
-    );
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
+
+export default Playfair;

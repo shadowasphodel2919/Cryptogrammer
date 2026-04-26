@@ -1,74 +1,177 @@
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import "./CipherPage.css";
+
+const Table = ({ data }) => {
+  if (!data || data.length === 0) return null;
+  return (
+    <div style={{ overflowX: 'auto', marginTop: '1.5rem', background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '8px' }}>
+      <div style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+        Railfence Visualization
+      </div>
+      <table style={{ borderCollapse: 'collapse', width: 'max-content' }}>
+        <tbody>
+          {data.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((cell, cellIndex) => (
+                <td key={cellIndex} style={{ 
+                  width: '30px', height: '30px', 
+                  textAlign: 'center', 
+                  border: '1px solid var(--border-color)',
+                  color: cell !== " " ? 'var(--accent-color)' : 'transparent',
+                  fontWeight: cell !== " " ? 'bold' : 'normal'
+                }}>
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 export const Railfence = () => {
-    const [message, setMessage] = useState("");
-    const [key, setKey] = useState(0);
-    const [cipher, setCipher] = useState("");
-    const [table, setTable] = useState([]);
-    
-    function Table({ data }) {
-        return (
-          <table>
-            <tbody>
-              {data.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {row.map((cell, cellIndex) => (
-                    <td key={cellIndex}>{cell}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        );
-    }
-    const buildCipher = (e) => {
-        e.preventDefault();
-        let rows = [];
-        let r = key;
-        let c = message.length;
-        for(let i = 0; i < r; i++){
-            rows[i] = []
-            for(let j = 0; j < c; j++){
-                rows[i][j] = " ";
-            }
-        }
-        let text = message;
-        let dir_down = false;
-        let row = 0, col = 0;
-        for(let i = 0; i < text.length; i++){
-            if (row == 0 || row == key - 1) dir_down = !dir_down;
-            rows[row][col++] = text[i];
-            dir_down ? row++ : row--;
-        }
+  const [text, setText] = useState("");
+  const [mode, setMode] = useState("encode"); // 'encode' or 'decode'
+  const [key, setKey] = useState(3);
+  const [tableData, setTableData] = useState([]);
 
-        let result  = ''
-        for(let i = 0; i < key; i++){
-            for(let j = 0; j < text.length; j++){
-                if(rows[i][j]!=" ")result += rows[i][j];
-            }
-        }
-        setCipher(result)
-        setTable(rows);
+  const buildTable = (msg, k) => {
+    if (!msg || k < 2) return [];
+    let rows = Array.from({ length: k }, () => Array(msg.length).fill(" "));
+    let dir_down = false;
+    let row = 0, col = 0;
+    
+    for (let i = 0; i < msg.length; i++) {
+      if (row === 0 || row === k - 1) dir_down = !dir_down;
+      rows[row][col++] = msg[i];
+      dir_down ? row++ : row--;
     }
-    return (<>
-      <h2>Railfence Cipher</h2>
-      <Form>
-        <Form.Group className='mb-3' controlId='message'>
-            <Form.Label>Plain Text</Form.Label>
-            <Form.Control type='text'  onChange={(e)=>setMessage(e.target.value)} placeholder='Enter Message' />
-        </Form.Group>
-        <Form.Group className='mb-3' controlId='key'>
-            <Form.Label>Key</Form.Label>
-            <Form.Control type='number' onChange={(e)=>setKey(e.target.value)} placeholder='Enter the key/rows' />
-        </Form.Group>
-        <Button variant='primary' type='submit' onClick={(e)=>buildCipher(e)}>Submit</Button>
-        <Form.Group className='mb-3' controlId='cipher'>
-            <Form.Label>Cipher Text</Form.Label>
-            <Form.Control type='text' value={cipher} placeholder='Encrypted Text' readOnly />
-        </Form.Group>
-    </Form>
-    <Table data={table}/>
-    </>);
+    return rows;
+  };
+
+  const encode = (msg, k) => {
+    if (!msg || k < 2) return msg;
+    let rows = buildTable(msg, k);
+    let result = '';
+    for (let i = 0; i < k; i++) {
+      for (let j = 0; j < msg.length; j++) {
+        if (rows[i][j] !== " ") result += rows[i][j];
+      }
+    }
+    return result;
+  };
+
+  const decode = (cpr, k) => {
+    if (!cpr || k < 2) return cpr;
+    
+    // First mark the spots where characters should go with '*'
+    let rows = Array.from({ length: k }, () => Array(cpr.length).fill(" "));
+    let dir_down = false;
+    let row = 0, col = 0;
+    for (let i = 0; i < cpr.length; i++) {
+      if (row === 0 || row === k - 1) dir_down = !dir_down;
+      rows[row][col++] = '*';
+      dir_down ? row++ : row--;
+    }
+    
+    // Fill the '*' spots with actual ciphertext characters row by row
+    let index = 0;
+    for (let i = 0; i < k; i++) {
+      for (let j = 0; j < cpr.length; j++) {
+        if (rows[i][j] === '*' && index < cpr.length) {
+          rows[i][j] = cpr[index++];
+        }
+      }
+    }
+    
+    // Read off the zigzag
+    let result = '';
+    dir_down = false;
+    row = 0; col = 0;
+    for (let i = 0; i < cpr.length; i++) {
+      if (row === 0 || row === k - 1) dir_down = !dir_down;
+      if (rows[row][col] !== " ") result += rows[row][col++];
+      dir_down ? row++ : row--;
+    }
+    return result;
+  };
+
+  const plaintext = mode === "encode" ? text : decode(text, parseInt(key));
+  const ciphertext = mode === "encode" ? encode(text, parseInt(key)) : text;
+
+  useEffect(() => {
+    // Generate visualization based on plaintext
+    if (plaintext && parseInt(key) >= 2) {
+      setTableData(buildTable(plaintext, parseInt(key)));
+    } else {
+      setTableData([]);
+    }
+  }, [plaintext, key]);
+
+  return (
+    <div className="cipher-container">
+      <div className="cipher-header">
+        <h1>Railfence Cipher</h1>
+        
+        <div className="cipher-definition">
+          <h3>What is it?</h3>
+          <p>
+            The Railfence cipher is a transposition cipher that writes the plaintext downwards diagonally 
+            on successive "rails" of an imaginary fence, then moving up when the bottom rail is reached. 
+            When the end of the message is reached, the ciphertext is generated by reading off the characters row by row.
+          </p>
+        </div>
+
+        <div className="cipher-example">
+          <div className="cipher-example-title">Example (Key/Rails = 3)</div>
+          <div>Plaintext:  WE ARE DISCOVERED</div>
+          <div>Ciphertext: WECRL EREDSOEE V I A</div>
+        </div>
+      </div>
+
+      <div className="cipher-sandbox">
+        <div className="sandbox-title">Interactive Sandbox</div>
+        
+        <div className="input-group">
+          <label>Rails (Key)</label>
+          <input 
+            type="number" 
+            min="2"
+            value={key} 
+            onChange={(e) => setKey(e.target.value)} 
+          />
+        </div>
+
+        <div className="input-row">
+          <div className="input-group">
+            <label>Plaintext</label>
+            <textarea 
+              value={plaintext}
+              onChange={(e) => {
+                setMode("encode");
+                setText(e.target.value);
+              }}
+              placeholder="Type message here..."
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Ciphertext</label>
+            <textarea 
+              value={ciphertext}
+              onChange={(e) => {
+                setMode("decode");
+                setText(e.target.value);
+              }}
+              placeholder="Or type ciphertext here..."
+            />
+          </div>
+        </div>
+
+        {tableData.length > 0 && <Table data={tableData} />}
+      </div>
+    </div>
+  );
 }

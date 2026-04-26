@@ -1,40 +1,79 @@
-import Form from 'react-bootstrap/Form';
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
+import "./CipherPage.css";
 
 const Atbash = () => {
+  const [text, setText] = useState("");
+  
+  const processText = (msg) => {
+    let cipherText = '';
+    let fw = 'abcdefghijklmnopqrstuvwxyz';
+    let bw = 'zyxwvutsrqponmlkjihgfedcba';
     
-    const [message, setMessage] = useState("");
-    const [cipher, setCipher] = useState("");
-    useEffect(() => {
-      setCipher(message);
-      let text = message
-      let cipherText = ''
-      let fw = 'abcdefghijklmnopqrstuvwxyz'
-      let bw = 'zxywuvtsrqponmlkjihgfedcba'
-      for(let i = 0; i < text.length; i++){
-        if(text.charAt(i).toUpperCase()===text.charAt(i)){
-            //uppercase
-            cipherText += bw.charAt(fw.indexOf(text.charAt(i).toLowerCase())).toUpperCase()
-        }else
-        cipherText += bw.charAt(fw.indexOf(text.charAt(i)))
+    for (let i = 0; i < msg.length; i++) {
+      let char = msg.charAt(i);
+      let isUpper = char === char.toUpperCase();
+      let index = fw.indexOf(char.toLowerCase());
+      
+      if (index !== -1) {
+        let newChar = bw.charAt(index);
+        cipherText += isUpper ? newChar.toUpperCase() : newChar;
+      } else {
+        cipherText += char;
       }
-      console.log(cipherText);
-      setCipher(cipherText)
-    }, [message]) 
-    return (
-        <Form>
-            <Form.Group className='mb-3' controlId='message'>
-                <Form.Label>Plain Text</Form.Label>
-                <Form.Control type='text'  onChange={(e)=>setMessage(e.target.value)} placeholder='Enter Message' />
-            </Form.Group>
-            <Form.Group className='mb-3' controlId='cipher'>
-                <Form.Label>Cipher Text</Form.Label>
-                <Form.Control type='text' value={cipher} placeholder='CipherText' readOnly />
-            </Form.Group>
-        </Form>
-    )
+    }
+    return cipherText;
+  }
+
+  const processed = processText(text);
+
+  return (
+    <div className="cipher-container">
+      <div className="cipher-header">
+        <h1>Atbash Cipher</h1>
+        
+        <div className="cipher-definition">
+          <h3>What is it?</h3>
+          <p>
+            The Atbash cipher is a simple substitution cipher originally used to encode the Hebrew alphabet. 
+            It works by substituting the first letter of an alphabet for the last, the second for the second to last, 
+            and so on, reversing the alphabet. Because it is symmetric, the same process is used for both encryption 
+            and decryption.
+          </p>
+        </div>
+
+        <div className="cipher-example">
+          <div className="cipher-example-title">Example</div>
+          <div>Plaintext:  A B C ... X Y Z</div>
+          <div>Ciphertext: Z Y X ... C B A</div>
+        </div>
+      </div>
+
+      <div className="cipher-sandbox">
+        <div className="sandbox-title">Interactive Sandbox</div>
+        
+        <div className="input-row">
+          <div className="input-group">
+            <label>Input Text</label>
+            <textarea 
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Type message here to encode/decode..."
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Output Text</label>
+            <textarea 
+              value={processed}
+              readOnly
+              placeholder="Result will appear here..."
+              style={{ borderColor: 'var(--accent-color)' }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-//A B C D E F G H I J K L M
-//Z Y X W V U T S R Q P O N
-export default Atbash
+export default Atbash;

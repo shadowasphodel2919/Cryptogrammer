@@ -39,7 +39,12 @@ const Header = () => {
 
   return (
     <>
-    <AppBar position="sticky" sx={{ backgroundColor: 'black' }}>
+    <AppBar position="sticky" elevation={0} sx={{ 
+      backgroundColor: 'rgba(10, 10, 10, 0.7)', 
+      backdropFilter: 'blur(12px)',
+      WebkitBackdropFilter: 'blur(12px)',
+      borderBottom: '1px solid rgba(0, 255, 65, 0.2)',
+    }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
@@ -88,14 +93,14 @@ const Header = () => {
                   display: { xs: 'block', md: 'none' },
                 }}
               >
-                <MenuItem key='Articles' as={Link} to="articles" onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">Articles</Typography>
+                <MenuItem key='Articles' component={Link} to="articles" onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center" sx={{ fontFamily: "'Roboto Mono', monospace" }}>Articles</Typography>
                 </MenuItem>
-                <MenuItem key='Algorithms' as={Link} to="algorithms" onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">Algorithms</Typography>
+                <MenuItem key='Algorithms' component={Link} to="algorithms" onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center" sx={{ fontFamily: "'Roboto Mono', monospace" }}>Algorithms</Typography>
                 </MenuItem>
-                <MenuItem key='Steganography' as={Link} to="steganography" onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">Steganography</Typography>
+                <MenuItem key='Steganography' component={Link} to="steganography" onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center" sx={{ fontFamily: "'Roboto Mono', monospace" }}>Steganography</Typography>
                 </MenuItem>
               </Menu>
             </Box>
@@ -119,25 +124,25 @@ const Header = () => {
             >
               CRYPTOGRAMMER
             </Typography>
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'flex-end' }}>
               <Button
                 key='Articles'
-                sx={{my:2, color:'white',display:'block'}}
-                as={Link} to="articles"
+                sx={{ my: 2, mx: 1, color: 'white', display: 'block', fontFamily: "'Roboto Mono', monospace", '&:hover': { color: '#00ff41', textShadow: '0 0 8px rgba(0,255,65,0.4)' } }}
+                component={Link} to="articles"
               >
                 Articles
               </Button>
               <Button
                 key='Algorithms'
-                sx={{my:2, color:'white',display:'block'}}
-                as={Link} to="algorithms"
+                sx={{ my: 2, mx: 1, color: 'white', display: 'block', fontFamily: "'Roboto Mono', monospace", '&:hover': { color: '#00ff41', textShadow: '0 0 8px rgba(0,255,65,0.4)' } }}
+                component={Link} to="algorithms"
               >
                 Algorithms
               </Button>
               <Button
                 key='Steganography'
-                sx={{my:2, color:'white',display:'block'}}
-                as={Link} to="steganography"
+                sx={{ my: 2, mx: 1, color: 'white', display: 'block', fontFamily: "'Roboto Mono', monospace", '&:hover': { color: '#00ff41', textShadow: '0 0 8px rgba(0,255,65,0.4)' } }}
+                component={Link} to="steganography"
               >
                 Steganography
               </Button>

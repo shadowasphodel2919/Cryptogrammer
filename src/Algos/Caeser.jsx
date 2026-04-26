@@ -1,125 +1,110 @@
-import { useState } from "react";
-import TextField from '@mui/material/TextField';
-import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
-const theme = createTheme({
-    palette: {
-      mode: 'dark',
-    },
-  });
-const Container = styled('div')({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    gap: 10,
-  });
-const Main = styled('div')({
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-});
+import React, { useState } from "react";
+import "./CipherPage.css";
 
 export const Caeser = () => {
-    const [message, setMessage] = useState("");
-    const [shift, setShift] = useState(0);
-    const [cipher, setCipher] = useState("");
-    const encode = (msg) => {
-      let cipherText = '';
-      let modShift = shift % 26;
-      for (let i = 0; i < msg.length; i++) {
-        let asciiCode = msg.charCodeAt(i);
-        if (asciiCode < 65 || (asciiCode > 90 && asciiCode < 97) || asciiCode > 122) {
-          cipherText += String.fromCharCode(asciiCode);
-          continue;
-        }
-        if (asciiCode >= 65 && asciiCode <= 90) {
-          asciiCode -= 65;
-          asciiCode += modShift;
-          asciiCode %= 26;
-          asciiCode += 65;
-        } else if (asciiCode >= 97 && asciiCode <= 122) {
-          asciiCode -= 97;
-          asciiCode += modShift;
-          asciiCode %= 26;
-          asciiCode += 97;
-        }
-        let cipherChar = String.fromCharCode(asciiCode);
-        cipherText += cipherChar;
+  const [text, setText] = useState("");
+  const [mode, setMode] = useState("encode"); // 'encode' or 'decode'
+  const [shift, setShift] = useState(3);
+
+  const encode = (msg, s) => {
+    let cipherText = '';
+    let modShift = parseInt(s) % 26 || 0;
+    for (let i = 0; i < msg.length; i++) {
+      let asciiCode = msg.charCodeAt(i);
+      if (asciiCode >= 65 && asciiCode <= 90) {
+        cipherText += String.fromCharCode(((asciiCode - 65 + modShift) % 26) + 65);
+      } else if (asciiCode >= 97 && asciiCode <= 122) {
+        cipherText += String.fromCharCode(((asciiCode - 97 + modShift) % 26) + 97);
+      } else {
+        cipherText += String.fromCharCode(asciiCode);
       }
-      return cipherText;
     }
-    const decode = (cpr) => {
-      let msg = '';
-      let modShift = shift % 26;
-      for (let i = 0; i < cpr.length; i++) {
-        let asciiCode = cpr.charCodeAt(i);
-        if (asciiCode < 65 || (asciiCode > 90 && asciiCode < 97) || asciiCode > 122) {
-          msg += String.fromCharCode(asciiCode);
-          continue;
-        }
-        if (asciiCode >= 65 && asciiCode <= 90) {
-          asciiCode -= 65;
-          asciiCode -= modShift;
-          asciiCode %= 26;
-          if(asciiCode < 0)asciiCode += 91;
-          else  asciiCode += 65;
-        } else if (asciiCode >= 97 && asciiCode <= 122) {
-          asciiCode -= 97;
-          asciiCode -= modShift;
-          asciiCode %= 26;
-          if(asciiCode < 0)asciiCode += 123;
-          else  asciiCode += 97;
-        }
-        let msgChar = String.fromCharCode(asciiCode);
-        msg += msgChar;
+    return cipherText;
+  }
+
+  const decode = (cpr, s) => {
+    let msg = '';
+    let modShift = parseInt(s) % 26 || 0;
+    for (let i = 0; i < cpr.length; i++) {
+      let asciiCode = cpr.charCodeAt(i);
+      if (asciiCode >= 65 && asciiCode <= 90) {
+        let decodedCode = asciiCode - 65 - modShift;
+        if (decodedCode < 0) decodedCode += 26;
+        msg += String.fromCharCode((decodedCode % 26) + 65);
+      } else if (asciiCode >= 97 && asciiCode <= 122) {
+        let decodedCode = asciiCode - 97 - modShift;
+        if (decodedCode < 0) decodedCode += 26;
+        msg += String.fromCharCode((decodedCode % 26) + 97);
+      } else {
+        msg += String.fromCharCode(asciiCode);
       }
-      return msg;
     }
-    function onMessageChange(txt){
-      setMessage(txt);
-      let c1 = encode(txt);
-      setCipher(c1);
-    }
-    function onShiftChange(s){
-      setShift(s);
-    }
-    function onCipherChange(cipher){
-      setCipher(cipher);
-      let m1 = decode(cipher);
-      setMessage(m1);
-    }
-    return (
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Container>
-          <h1>Caeser Cipher</h1>
-          <Main>
-            <TextField
-              placeholder="Enter Message"
-              label="Message"
-              value={message}
-              type="text"
-              onChange={(e)=>onMessageChange(e.target.value)}
+    return msg;
+  }
+
+  const plaintext = mode === "encode" ? text : decode(text, shift);
+  const ciphertext = mode === "encode" ? encode(text, shift) : text;
+
+  return (
+    <div className="cipher-container">
+      <div className="cipher-header">
+        <h1>Caesar Cipher</h1>
+        
+        <div className="cipher-definition">
+          <h3>What is it?</h3>
+          <p>
+            The Caesar Cipher is one of the simplest and most widely known encryption techniques. 
+            It is a type of substitution cipher in which each letter in the plaintext is replaced by a letter 
+            some fixed number of positions down the alphabet. For example, with a left shift of 3, D would be replaced by A. 
+            It is named after Julius Caesar, who used it in his private correspondence.
+          </p>
+        </div>
+
+        <div className="cipher-example">
+          <div className="cipher-example-title">Example (Shift = 3)</div>
+          <div>Plaintext:  HELLO WORLD</div>
+          <div>Ciphertext: KHOOR ZRUOG</div>
+        </div>
+      </div>
+
+      <div className="cipher-sandbox">
+        <div className="sandbox-title">Interactive Sandbox</div>
+        
+        <div className="input-group">
+          <label>Shift (Key)</label>
+          <input 
+            type="number" 
+            value={shift} 
+            onChange={(e) => setShift(e.target.value)} 
+          />
+        </div>
+
+        <div className="input-row">
+          <div className="input-group">
+            <label>Plaintext</label>
+            <textarea 
+              value={plaintext}
+              onChange={(e) => {
+                setMode("encode");
+                setText(e.target.value);
+              }}
+              placeholder="Type message here..."
             />
-            <TextField
-              placeholder="Shift"
-              label="Numeric Shift"
-              value={shift}
-              type="number"
-              onChange={(e)=>onShiftChange(e.target.value)}
+          </div>
+
+          <div className="input-group">
+            <label>Ciphertext</label>
+            <textarea 
+              value={ciphertext}
+              onChange={(e) => {
+                setMode("decode");
+                setText(e.target.value);
+              }}
+              placeholder="Or type ciphertext here..."
             />
-            <TextField
-              placeholder="Enter Cipher"
-              label="Cipher"
-              value={cipher}
-              onChange={(e)=>onCipherChange(e.target.value)}
-            />
-          </Main>
-        </Container>
-      </ThemeProvider>
-    );
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

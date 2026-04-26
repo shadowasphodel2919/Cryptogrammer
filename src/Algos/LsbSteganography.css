@@ -1,0 +1,158 @@
+.steg-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: calc(100vh - 64px);
+  padding: 40px 20px;
+}
+
+.steg-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.steg-header h1 {
+  font-size: 2.5rem;
+  color: var(--accent-color);
+  text-shadow: 0 0 10px var(--accent-glow);
+  margin-bottom: 0.5rem;
+}
+
+.steg-header p {
+  color: var(--text-secondary);
+}
+
+.steg-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.steg-tab {
+  padding: 10px 30px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.steg-tab.active {
+  background: var(--accent-glow);
+  border-color: var(--accent-color);
+  color: #fff;
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.steg-tab:hover:not(.active) {
+  border-color: var(--text-secondary);
+}
+
+.steg-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  max-width: 800px;
+}
+
+.steg-card {
+  padding: 2rem;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.drop-zone {
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.drop-zone.dragging, .drop-zone:hover {
+  border-color: var(--accent-color);
+  background: rgba(0, 255, 65, 0.05);
+}
+
+.drop-zone input[type="file"] {
+  display: none;
+}
+
+.drop-zone p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.drop-zone .browse-text {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
+.preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  object-fit: contain;
+  background: #000;
+}
+
+.steg-input {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.steg-button {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  align-self: center;
+  width: 100%;
+  max-width: 300px;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border-color);
+  border-top: 4px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
