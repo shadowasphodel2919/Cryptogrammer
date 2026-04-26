@@ -98,7 +98,16 @@ export const Home = () => {
         <h1 className="cyber-text" data-text={FINAL_TEXT}>
           {displayText}
         </h1>
-        <p className="subtitle">Secure • Encrypt • Decode</p>
+        <div className="hero-content">
+          <h2 className="hero-headline">Stop guessing how encryption works. Build it yourself.</h2>
+          <p className="hero-subheadline">
+            Master cryptography by breaking it. The interactive dojo for engineers to learn ciphers, steganography, and security through visual, hands-on experimentation.
+          </p>
+          <div className="cta-group">
+            <a href="/algorithms" className="cta-button primary-cta">Enter The Dojo</a>
+            <a href="https://github.com/shadowasphodel2919/Cryptogrammer" target="_blank" rel="noopener noreferrer" className="cta-button secondary-cta">View on GitHub</a>
+          </div>
+        </div>
       </div>
     </div>
   );

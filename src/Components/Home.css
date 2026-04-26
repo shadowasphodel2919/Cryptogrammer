@@ -44,20 +44,83 @@
   max-width: 90vw;
 }
 
-.subtitle {
-  font-family: 'Roboto Mono', monospace;
-  font-size: 1.2rem;
-  color: #888;
-  letter-spacing: 0.2rem;
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 800px;
   animation: fadeIn 2s ease-in-out forwards;
   animation-delay: 1.5s;
   opacity: 0;
+  padding: 0 2rem;
+}
+
+.hero-headline {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-subheadline {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.1rem;
+  color: #aaa;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.cta-group {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  pointer-events: auto; /* Re-enable clicks inside the overlay */
+}
+
+.cta-button {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0.8rem 2rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+}
+
+.primary-cta {
+  background-color: transparent;
+  color: #00ff41;
+  border: 2px solid #00ff41;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.2), inset 0 0 10px rgba(0, 255, 65, 0.1);
+}
+
+.primary-cta:hover {
+  background-color: #00ff41;
+  color: #050505;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.6), inset 0 0 10px rgba(0, 255, 65, 0.4);
+}
+
+.secondary-cta {
+  background-color: transparent;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.secondary-cta:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+  color: #fff;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -71,7 +134,19 @@
     font-size: 2.5rem;
     letter-spacing: 0.2rem;
   }
-  .subtitle {
-    font-size: 1rem;
+  .hero-headline {
+    font-size: 1.5rem;
+  }
+  .hero-subheadline {
+    font-size: 0.95rem;
+  }
+  .cta-group {
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+  }
+  .cta-button {
+    width: 100%;
+    text-align: center;
   }
 }
