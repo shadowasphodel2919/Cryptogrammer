@@ -2,6 +2,40 @@ import React, { useState, useEffect } from "react";
 import bigInt from "big-integer";
 import "./CipherPage.css";
 
+const isPrime = (num) => {
+  let n = parseInt(num);
+  if (isNaN(n) || n <= 1) return false;
+  if (n <= 3) return true;
+  if (n % 2 === 0 || n % 3 === 0) return false;
+  for (let i = 5; i * i <= n; i += 6) {
+    if (n % i === 0 || n % (i + 2) === 0) return false;
+  }
+  return true;
+};
+
+const gcd = (a, b) => {
+  if (b === 0) return a;
+  return gcd(b, a % b);
+};
+
+const modInverse = (a, m) => {
+  let m0 = m;
+  let y = 0;
+  let x = 1;
+  if (m === 1) return 0;
+  while (a > 1) {
+    let q = Math.floor(a / m);
+    let t = m;
+    m = a % m;
+    a = t;
+    t = y;
+    y = x - q * y;
+    x = t;
+  }
+  if (x < 0) x += m0;
+  return x;
+};
+
 export const RSA = () => {
   const [p, setP] = useState("61");
   const [q, setQ] = useState("53");
@@ -17,40 +51,6 @@ export const RSA = () => {
   const [decodedText, setDecodedText] = useState("");
 
   const [error, setError] = useState("");
-
-  const isPrime = (num) => {
-    let n = parseInt(num);
-    if (isNaN(n) || n <= 1) return false;
-    if (n <= 3) return true;
-    if (n % 2 === 0 || n % 3 === 0) return false;
-    for (let i = 5; i * i <= n; i += 6) {
-      if (n % i === 0 || n % (i + 2) === 0) return false;
-    }
-    return true;
-  };
-
-  const gcd = (a, b) => {
-    if (b === 0) return a;
-    return gcd(b, a % b);
-  };
-
-  const modInverse = (a, m) => {
-    let m0 = m;
-    let y = 0;
-    let x = 1;
-    if (m === 1) return 0;
-    while (a > 1) {
-      let q = Math.floor(a / m);
-      let t = m;
-      m = a % m;
-      a = t;
-      t = y;
-      y = x - q * y;
-      x = t;
-    }
-    if (x < 0) x += m0;
-    return x;
-  };
 
   useEffect(() => {
     if (p && q) {
